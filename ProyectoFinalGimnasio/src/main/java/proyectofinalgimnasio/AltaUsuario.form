@@ -34,45 +34,25 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jButtonGuardarUsuario" alignment="0" min="-2" pref="209" max="-2" attributes="0"/>
+                          <Component id="jButtonCancelar" min="-2" pref="118" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jLabelDNI" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jLabelNombre" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelApellidos" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelDNI" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabelVerificacionEmail" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabelVerificacionTelefono" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace pref="688" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
-                                      <Component id="jTextFieldDNI" min="-2" pref="85" max="-2" attributes="0"/>
+                                      <Component id="jTextFieldDNI" min="-2" pref="97" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabelVerificacionDNI" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
                                   </Group>
-                              </Group>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jButtonGuardarUsuario" alignment="0" min="-2" pref="209" max="-2" attributes="0"/>
-                                  <Component id="jButtonCancelar" min="-2" pref="118" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabelNombre" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabelApellidos" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
-                                              <Component id="jLabelVerificacionFechaNacimiento" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                              <Component id="jTextFieldNombre" alignment="0" pref="223" max="32767" attributes="0"/>
-                                              <Component id="jTextFieldApellidos" alignment="0" max="32767" attributes="0"/>
-                                          </Group>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="jTextFieldNombre" alignment="0" pref="223" max="32767" attributes="0"/>
+                                          <Component id="jTextFieldApellidos" alignment="0" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -80,26 +60,36 @@
                                           <Component id="jLabelVerificacionNombre" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabelTelefono" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabelEmail" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabelFechaNacimiento" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jLabelFechaNacimiento" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelTelefono" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelEmail" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="jTextFieldEmail" min="-2" pref="197" max="-2" attributes="0"/>
+                                          <Component id="jTextFieldTelefono" min="-2" pref="197" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="jTextFieldTelefono" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jTextFieldEmail" alignment="0" min="-2" pref="197" max="-2" attributes="0"/>
-                                          <Group type="102" attributes="0">
-                                              <Component id="jTextFieldFechaNacimiento" max="32767" attributes="0"/>
-                                              <EmptySpace min="-2" pref="112" max="-2" attributes="0"/>
-                                          </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jLabelVerificacionTelefono" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabelVerificacionEmail" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="jTextFieldFechaNacimiento" min="-2" pref="97" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jLabelVerificacionFechaNacimiento" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="347" max="-2" attributes="0"/>
                           </Group>
                       </Group>
+                      <EmptySpace pref="402" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <EmptySpace min="33" pref="33" max="-2" attributes="0"/>
@@ -135,40 +125,35 @@
                           <Component id="jLabelVerificacionApellido" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jLabelVerificacionTelefono" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabelVerificacionEmail" min="-2" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="jLabelDNI" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jTextFieldDNI" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabelVerificacionDNI" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jLabelVerificacionFechaNacimiento" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelEmail" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldEmail" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldDNI" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelDNI" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelVerificacionDNI" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabelFechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jTextFieldFechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelVerificacionFechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelVerificacionTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jTextFieldEmail" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelEmail" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelVerificacionEmail" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                       <Component id="jButtonGuardarUsuario" min="-2" pref="49" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jButtonCancelar" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -234,11 +219,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="GESTION DE USUARIOS"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonGestionUsuariosActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonNuevoAbono">
           <Properties>
             <Property name="text" type="java.lang.String" value="NUEVO ABONO"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonNuevoAbonoActionPerformed"/>
+          </Events>
         </Component>
         <Container class="javax.swing.JPanel" name="jPanelAyuda">
           <Properties>

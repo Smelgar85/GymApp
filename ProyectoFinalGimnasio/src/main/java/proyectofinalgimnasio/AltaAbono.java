@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package proyectofinalgimnasio;
 
 import javax.swing.UIManager;
@@ -10,18 +7,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- *
- * @author Sebastián Melgar Marín
- */
+
 public class AltaAbono extends javax.swing.JFrame {
-
-  public AltaAbono() {
+    private String dniUsuarioSeleccionado;
+    
+    public AltaAbono() {
         initComponents();
         jButtonGuardarAbono.addActionListener(new ActionListener() {
             @Override
@@ -30,7 +30,6 @@ public class AltaAbono extends javax.swing.JFrame {
             }
         });
 
-        // Agregar escuchadores de eventos a los campos relacionados con el importe
         jComboBoxPrecioMensual.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,64 +66,91 @@ public class AltaAbono extends javax.swing.JFrame {
         });
     }
   
+    private boolean verificarFecha(String fecha) {
+        // Verificar el formato de la fecha usando una expresión regular
+        String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
+        if (!fecha.matches(regexFecha)) {
+            return false;
+        }
+
+        String[] partesFecha = fecha.split("[-/]");
+        int dia = Integer.parseInt(partesFecha[0]);
+        int mes = Integer.parseInt(partesFecha[1]);
+        int anio = Integer.parseInt(partesFecha[2]);
+
+        if (mes < 1 || mes > 12) {
+            return false;
+        }
+
+        int[] diasPorMes = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        if (mes == 2 && esAnioBisiesto(anio)) {
+            diasPorMes[1] = 29;
+        }
+        if (dia < 1 || dia > diasPorMes[mes - 1]) {
+            return false;
+        }
+
+        return true;
+    }
+
     private void verificarFechaInicio() {
         String fechaInicioStr = jTextFieldFechaInicio.getText();
-        
-        // Validar formato de la fecha de inicio
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        try {
-            LocalDate.parse(fechaInicioStr, formatter);
-            jLabelVerificadorFechaInicio.setText("");
-        } catch (Exception e) {
-            jLabelVerificadorFechaInicio.setText("Fecha de inicio inválida");
-        }
-    }
 
-    private void calcularFechaFin() {
-        String fechaInicioStr = jTextFieldFechaInicio.getText();
-        String numeroMesesStr = jTextFieldMeses.getText();
-        
-        // Validar formato de la fecha de inicio
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate fechaInicio = null;
-        try {
-            fechaInicio = LocalDate.parse(fechaInicioStr, formatter);
-        } catch (Exception e) {
-            jTextFieldFechaFin.setText("Fecha de inicio inválida");
+        if (!verificarFecha(fechaInicioStr)) {
+            jLabelVerificadorFechaInicio.setText("Fecha incorrecta");
             return;
         }
 
-        // Validar número de meses
-        Pattern pattern = Pattern.compile("^(?:[1-9]|1[0-2])$");
-        Matcher matcher = pattern.matcher(numeroMesesStr);
-        if (!matcher.matches()) {
-            jTextFieldFechaFin.setText("Número de meses inválido");
-            return;
-        }
-        // Calcular fecha de fin y actualizar el campo correspondiente
-        int numeroMeses = Integer.parseInt(numeroMesesStr);
-        LocalDate fechaFin = fechaInicio.plusMonths(numeroMeses);
-        String fechaFinStr = fechaFin.format(formatter);
-        jTextFieldFechaFin.setText(fechaFinStr);
+        jLabelVerificadorFechaInicio.setText("");
+        calcularFechaFin(); // Llamar a calcularFechaFin después de verificar la fecha
     }
 
- 
-  private void calcularPrecioTotal() {
+        private void calcularFechaFin() {
+            if (!jLabelVerificadorFechaInicio.getText().isEmpty()) {
+                return;
+            }
+
+            String fechaInicioStr = jTextFieldFechaInicio.getText();
+            String numeroMesesStr = jTextFieldMeses.getText();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate fechaInicio = null;
+            try {
+                fechaInicio = LocalDate.parse(fechaInicioStr, formatter);
+            } catch (Exception e) {
+                jLabelVerificadorFechaInicio.setText("Fecha incorrecta");
+                return;
+            }
+
+            Pattern pattern = Pattern.compile("^(?:[1-9]|1[0-2])$");
+            Matcher matcher = pattern.matcher(numeroMesesStr);
+            if (!matcher.matches()) {
+                jLabelVerificadorMeses.setText("Mínimo 1 mes, máximo 12");
+                return;
+            }
+
+            int numeroMeses = Integer.parseInt(numeroMesesStr);
+            LocalDate fechaFin = fechaInicio.plusMonths(numeroMeses);
+            String fechaFinStr = fechaFin.format(formatter);
+            jTextFieldFechaFin.setText(fechaFinStr);
+        }
+
+    private void calcularPrecioTotal() {
         String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
         String descuento = (String) jComboBoxDescuento.getSelectedItem();
         String numeroMeses = jTextFieldMeses.getText();
         boolean camposCorrectos = true;
         
-        // Validar el número de meses ingresado
         Pattern pattern = Pattern.compile("^(?:[1-9]|1[0-2])$");
         Matcher matcher = pattern.matcher(numeroMeses);
         
         if (!matcher.matches()) {
-            jLabelPrecioTotal.setText("Número de meses inválido");
+            jLabelVerificadorMeses.setText("Mínimo 1 mes, máximo 12");
             camposCorrectos = false;
+        } else {
+            jLabelVerificadorMeses.setText("");
         }
         
-        // Calcular el precio total si todos los campos son correctos
         if (camposCorrectos) {
             double precioMensualDouble = Double.parseDouble(precioMensual);
             int numeroMesesInt = Integer.parseInt(numeroMeses);
@@ -138,6 +164,134 @@ public class AltaAbono extends javax.swing.JFrame {
             total *= (1 - descuentoDouble / 100);
 
             jLabelPrecioTotal.setText(String.format("%.2f", total) + "€");
+        }
+    }
+
+    private void verificarDatos() {
+        String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
+        String descuento = (String) jComboBoxDescuento.getSelectedItem();
+        String numeroMeses = jTextFieldMeses.getText();
+        String fechaInicio = jTextFieldFechaInicio.getText();
+        boolean camposCorrectos = true;
+
+        Pattern pattern = Pattern.compile("^(?:[1-9]|1[0-2])$");
+        Matcher matcher = pattern.matcher(numeroMeses);
+
+        if (!matcher.matches()) {
+            jLabelVerificadorMeses.setText("Mínimo 1 mes. Máximo 12 meses.");
+            camposCorrectos = false;
+        } else {
+            jLabelVerificadorMeses.setText("");
+        }
+
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try {
+            LocalDate fechaInicioParsed = LocalDate.parse(fechaInicio, formatter);
+            if (fechaInicioParsed.isBefore(fechaActual)) {
+                jLabelVerificadorFechaInicio.setText("Fecha incorrecta");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificadorFechaInicio.setText("");
+            }
+        } catch (Exception e) {
+            jLabelVerificadorFechaInicio.setText("Fecha incorrecta");
+            camposCorrectos = false;
+        }
+
+        double precioMensualDouble = Double.parseDouble(precioMensual);
+        int numeroMesesInt = Integer.parseInt(numeroMeses);
+        double total = precioMensualDouble * numeroMesesInt;
+
+        if (jCheckBox1.isSelected()) {
+            total += 10 * numeroMesesInt;
+        }
+
+        double descuentoDouble = Double.parseDouble(descuento);
+        total *= (1 - descuentoDouble / 100);
+
+        jLabelPrecioTotal.setText(String.format("%.2f", total) + "€");
+
+        if (camposCorrectos) {
+                String fechaFin = jTextFieldFechaFin.getText();
+                // Ahora pasamos 'total' directamente a insertarAbonoEnBD
+                if (insertarAbonoEnBD(fechaInicio, fechaFin, total)) {
+                    System.out.println("Abono guardado exitosamente.");
+                } else {
+                    System.out.println("Error al guardar el abono en la base de datos.");
+                }
+        }
+    }
+
+
+    private boolean esAnioBisiesto(int anio) {
+        return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+    }
+    
+    public void mostrarUsuarioSeleccionado(String nombre, String apellidos, String dni) {
+        jTextFieldUsuario.setText(nombre + " " + apellidos);
+
+        // Almacenar el DNI del usuario seleccionado
+        dniUsuarioSeleccionado = dni;
+
+        // Añade esta línea para depurar y verificar que el DNI se está capturando correctamente
+        System.out.println("DNI Usuario Seleccionado: " + dniUsuarioSeleccionado);
+    }
+    
+    private boolean insertarAbonoEnBD(String fechaInicio, String fechaFin, double precioTotal) {
+        // Convertir las fechas de inicio y fin al formato esperado por MySQL (YYYY-MM-DD)
+        DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate fechaInicioLocalDate = LocalDate.parse(fechaInicio, formatterEntrada);
+        String fechaInicioFormatoSQL = fechaInicioLocalDate.format(formatterSalida);
+
+        LocalDate fechaFinLocalDate = LocalDate.parse(fechaFin, formatterEntrada);
+        String fechaFinFormatoSQL = fechaFinLocalDate.format(formatterSalida);
+
+        // Ahora puedes usar fechaInicioFormatoSQL y fechaFinFormatoSQL en tu consulta SQL
+        String insertQuery = "INSERT INTO abonos (usuario_dni, fecha_inicio_contrato, fecha_fin_contrato, precio_total, duracion_meses, precio_mensual, premium) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        int duracionMeses = Integer.parseInt(jTextFieldMeses.getText());
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement pstmt = conexion.prepareStatement(insertQuery)) {
+
+            pstmt.setString(1, dniUsuarioSeleccionado);
+            pstmt.setString(2, fechaInicioFormatoSQL);
+            pstmt.setString(3, fechaFinFormatoSQL);
+            pstmt.setDouble(4, precioTotal);
+            pstmt.setInt(5, duracionMeses);
+            pstmt.setDouble(6, calcularPrecioMensual(precioTotal, duracionMeses));
+            pstmt.setBoolean(7, jCheckBox1.isSelected());
+
+            int filasAfectadas = pstmt.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    
+    private double calcularPrecioMensual(double precioTotal, int duracionMeses) {
+        return precioTotal / duracionMeses;
+    }
+    
+    public class FechaFormato {
+        public static void main(String[] args) {
+            // Fecha en formato DD/MM/YYYY
+            String fechaInicioStr = "01/03/2024";
+
+            // Convertir de DD/MM/YYYY a LocalDate
+            DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate fecha = LocalDate.parse(fechaInicioStr, formatterEntrada);
+
+            // Convertir de LocalDate a YYYY-MM-DD
+            DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String fechaInicioFormatoSQL = fecha.format(formatterSalida);
+
+            System.out.println(fechaInicioFormatoSQL); // Salida: 2024-03-01
         }
     }
 
@@ -164,25 +318,21 @@ public class AltaAbono extends javax.swing.JFrame {
         jLabelPrecioMensual = new javax.swing.JLabel();
         jLabelDescuento = new javax.swing.JLabel();
         jLabelFechaInicio = new javax.swing.JLabel();
-        jTextFieldUsuario = new javax.swing.JTextField();
-        jTextFieldMeses = new javax.swing.JTextField();
-        jTextFieldFechaInicio = new javax.swing.JTextField();
-        jButtonCancelar = new javax.swing.JButton();
-        jButtonGuardarAbono = new javax.swing.JButton();
-        jLabelVerificacionNombre = new javax.swing.JLabel();
-        jLabelVerificacionApellido = new javax.swing.JLabel();
-        jLabelVerificacionTelefono = new javax.swing.JLabel();
-        jLabelVerificacionEmail = new javax.swing.JLabel();
-        jLabelVerificacionFechaNacimiento = new javax.swing.JLabel();
         jLabelFechaFin = new javax.swing.JLabel();
-        jTextFieldFechaFin = new javax.swing.JTextField();
-        jComboBoxPrecioMensual = new javax.swing.JComboBox<>();
-        jComboBoxDescuento = new javax.swing.JComboBox<>();
-        jButtonBuscarUsuario = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
         jLabelPrecioTotal = new javax.swing.JLabel();
         jLabelVerificadorFechaInicio = new javax.swing.JLabel();
+        jLabelVerificadorMeses = new javax.swing.JLabel();
+        jTextFieldUsuario = new javax.swing.JTextField();
+        jTextFieldMeses = new javax.swing.JTextField();
+        jTextFieldFechaInicio = new javax.swing.JTextField();
+        jTextFieldFechaFin = new javax.swing.JTextField();
+        jButtonBuscarUsuario = new javax.swing.JButton();
+        jButtonGuardarAbono = new javax.swing.JButton();
+        jButtonCancelar = new javax.swing.JButton();
+        jComboBoxPrecioMensual = new javax.swing.JComboBox<>();
+        jComboBoxDescuento = new javax.swing.JComboBox<>();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -199,8 +349,18 @@ public class AltaAbono extends javax.swing.JFrame {
         });
 
         jButtonGestionUsuarios.setText("GESTION DE USUARIOS");
+        jButtonGestionUsuarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionUsuariosActionPerformed(evt);
+            }
+        });
 
         jButtonNuevoAbono.setText("NUEVO ABONO");
+        jButtonNuevoAbono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonNuevoAbonoActionPerformed(evt);
+            }
+        });
 
         jPanelAyuda.setBackground(new java.awt.Color(255, 102, 102));
         jPanelAyuda.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
@@ -301,6 +461,20 @@ public class AltaAbono extends javax.swing.JFrame {
         jLabelFechaInicio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabelFechaInicio.setText("Fecha de inicio");
 
+        jLabelFechaFin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabelFechaFin.setText("Fecha de fin");
+
+        jLabel1.setText("ABONO PREMIUM (10€ mensuales más)");
+
+        jLabelPrecioTotal.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabelPrecioTotal.setText("Precio TOTAL:");
+
+        jLabelVerificadorFechaInicio.setForeground(new java.awt.Color(255, 51, 0));
+        jLabelVerificadorFechaInicio.setToolTipText("");
+
+        jLabelVerificadorMeses.setForeground(new java.awt.Color(255, 51, 0));
+        jLabelVerificadorMeses.setToolTipText("");
+
         jTextFieldUsuario.setEditable(false);
         jTextFieldUsuario.setToolTipText("Introducir nombre (Solo letras y espacios)");
         jTextFieldUsuario.addActionListener(new java.awt.event.ActionListener() {
@@ -323,10 +497,18 @@ public class AltaAbono extends javax.swing.JFrame {
             }
         });
 
-        jButtonCancelar.setText("Cancelar");
-        jButtonCancelar.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldFechaFin.setEditable(false);
+        jTextFieldFechaFin.setToolTipText("Introduce fecha de nacimiento válida");
+        jTextFieldFechaFin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCancelarActionPerformed(evt);
+                jTextFieldFechaFinActionPerformed(evt);
+            }
+        });
+
+        jButtonBuscarUsuario.setText("Buscar...");
+        jButtonBuscarUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBuscarUsuarioActionPerformed(evt);
             }
         });
 
@@ -339,25 +521,10 @@ public class AltaAbono extends javax.swing.JFrame {
             }
         });
 
-        jLabelVerificacionNombre.setForeground(new java.awt.Color(255, 51, 51));
-
-        jLabelVerificacionApellido.setForeground(new java.awt.Color(255, 0, 0));
-
-        jLabelVerificacionTelefono.setForeground(new java.awt.Color(255, 0, 0));
-        jLabelVerificacionTelefono.setToolTipText("");
-
-        jLabelVerificacionEmail.setForeground(new java.awt.Color(255, 0, 0));
-
-        jLabelVerificacionFechaNacimiento.setForeground(new java.awt.Color(255, 0, 0));
-
-        jLabelFechaFin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabelFechaFin.setText("Fecha de fin");
-
-        jTextFieldFechaFin.setEditable(false);
-        jTextFieldFechaFin.setToolTipText("Introduce fecha de nacimiento válida");
-        jTextFieldFechaFin.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCancelar.setText("Cancelar");
+        jButtonCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldFechaFinActionPerformed(evt);
+                jButtonCancelarActionPerformed(evt);
             }
         });
 
@@ -369,13 +536,6 @@ public class AltaAbono extends javax.swing.JFrame {
         });
 
         jComboBoxDescuento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0", "5", "15", "25", "50", "100" }));
-
-        jButtonBuscarUsuario.setText("Buscar...");
-
-        jLabel1.setText("ABONO PREMIUM (10€ mensuales más)");
-
-        jLabelPrecioTotal.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabelPrecioTotal.setText("Precio TOTAL:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -394,55 +554,49 @@ public class AltaAbono extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(85, 85, 85)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelFechaInicio)
+                                    .addComponent(jLabelFechaFin)
+                                    .addComponent(jLabelDescuento)
+                                    .addComponent(jLabelPrecioMensual)
+                                    .addComponent(jLabelMeses))
+                                .addGap(88, 88, 88)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jTextFieldFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextFieldFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelVerificadorFechaInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
+                                        .addGap(190, 190, 190))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jComboBoxPrecioMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jComboBoxDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelVerificadorMeses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGap(310, 310, 310))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabelUsuario)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButtonBuscarUsuario)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelUsuario)
-                                    .addComponent(jLabelMeses)
-                                    .addComponent(jLabelPrecioMensual)
-                                    .addComponent(jLabelDescuento)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabelFechaInicio)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jTextFieldFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelVerificadorFechaInicio))
+                                    .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelPrecioTotal)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jCheckBox1)))
-                                .addGap(12, 12, 12)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jComboBoxPrecioMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(117, 117, 117)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabelVerificacionEmail)
-                                            .addComponent(jLabelVerificacionTelefono)))
-                                    .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBoxDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonBuscarUsuario))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(37, 37, 37)
-                                                .addComponent(jLabelPrecioTotal)
-                                                .addGap(118, 118, 118))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                .addComponent(jLabelFechaFin)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jTextFieldFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                                        .addComponent(jLabelVerificacionFechaNacimiento))))
-                            .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(373, 373, 373)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelVerificacionApellido)
-                            .addComponent(jLabelVerificacionNombre))
-                        .addContainerGap())))
+                                        .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -456,42 +610,45 @@ public class AltaAbono extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addComponent(jLabelTituloVentana)
                         .addGap(38, 38, 38)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelUsuario)
-                            .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelVerificacionNombre)
-                            .addComponent(jButtonBuscarUsuario))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabelUsuario)
+                                    .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabelMeses)
+                                    .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelVerificadorMeses))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabelPrecioMensual)
+                                    .addComponent(jComboBoxPrecioMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabelDescuento)
+                                    .addComponent(jComboBoxDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addComponent(jButtonBuscarUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelMeses)
-                            .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelVerificacionApellido))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelPrecioMensual)
-                            .addComponent(jLabelVerificacionTelefono)
-                            .addComponent(jComboBoxPrecioMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelDescuento)
-                            .addComponent(jLabelVerificacionEmail)
-                            .addComponent(jComboBoxDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelFechaInicio)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextFieldFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelVerificacionFechaNacimiento)
-                            .addComponent(jLabelFechaFin)
-                            .addComponent(jTextFieldFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelVerificadorFechaInicio))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabelFechaInicio)
+                                .addComponent(jLabelVerificadorFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jCheckBox1)
-                            .addComponent(jLabel1))
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelPrecioTotal))
+                            .addComponent(jLabelFechaFin)
+                            .addComponent(jTextFieldFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jCheckBox1))
+                        .addGap(33, 33, 33)
+                        .addComponent(jLabelPrecioTotal)
+                        .addGap(38, 38, 38)
+                        .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonCancelar)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -501,7 +658,10 @@ public class AltaAbono extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonNuevoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoUsuarioActionPerformed
-        // TODO add your handling code here:
+        AltaUsuario nuevoFrame = new AltaUsuario();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
     private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
@@ -517,7 +677,7 @@ public class AltaAbono extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldFechaInicioActionPerformed
 
     private void jButtonGuardarAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarAbonoActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jButtonGuardarAbonoActionPerformed
 
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
@@ -536,57 +696,30 @@ public class AltaAbono extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBoxPrecioMensualActionPerformed
 
- private void verificarDatos() {
-        String regexNumeroDeMeses = "^(?:[1-9]|1[0-2])$";
-        String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
-        String descuento = (String) jComboBoxDescuento.getSelectedItem();
-        String numeroMeses = jTextFieldMeses.getText();
-        String fechaInicio = jTextFieldFechaInicio.getText();
-        boolean camposCorrectos = true;
-        
-        Pattern pattern = Pattern.compile(regexNumeroDeMeses);
-        Matcher matcher = pattern.matcher(numeroMeses);
-        
-        if (!matcher.matches()) {
-            jLabelVerificacionApellido.setText("Mínimo 1 mes. Máximo 12 meses.");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionApellido.setText("");
+    private void jButtonBuscarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarUsuarioActionPerformed
+        BuscarUsuarios dialogoBuscarUsuarios = null;
+        try {
+            dialogoBuscarUsuarios = new BuscarUsuarios(this, true);
+        } catch (SQLException ex) {
+            Logger.getLogger(AltaAbono.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        LocalDate fechaActual = LocalDate.now();
-        LocalDate fechaInicioParsed = LocalDate.parse(fechaInicio, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        
-        if (fechaInicioParsed.isBefore(fechaActual)) {
-            jLabelVerificacionFechaNacimiento.setText("La fecha de inicio debe ser actual o futura");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionFechaNacimiento.setText("");
-        }
+        dialogoBuscarUsuarios.setVisible(true);
+    }//GEN-LAST:event_jButtonBuscarUsuarioActionPerformed
 
-        double precioMensualDouble = Double.parseDouble(precioMensual);
-        int numeroMesesInt = Integer.parseInt(numeroMeses);
-        double total = precioMensualDouble * numeroMesesInt;
+    private void jButtonNuevoAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoAbonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
 
-        if (jCheckBox1.isSelected()) {
-            total += 10 * numeroMesesInt;
-        }
+    private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
+        GestionUsuarios nuevoFrame = new GestionUsuarios();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
+    }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
-        double descuentoDouble = Double.parseDouble(descuento);
-        total *= (1 - descuentoDouble / 100);
-
-        jLabelPrecioTotal.setText(String.format("%.2f", total) + "€");
-
-        if (camposCorrectos) {
-            System.out.println("Los datos son correctos. Guardando abono...");
-        }
-    }
-
-    private boolean esAnioBisiesto(int anio) {
-        return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
-    }
-
- public static void main(String args[]) {
+ 
+    public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
@@ -622,12 +755,8 @@ public class AltaAbono extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPrecioTotal;
     private javax.swing.JLabel jLabelTituloVentana;
     private javax.swing.JLabel jLabelUsuario;
-    private javax.swing.JLabel jLabelVerificacionApellido;
-    private javax.swing.JLabel jLabelVerificacionEmail;
-    private javax.swing.JLabel jLabelVerificacionFechaNacimiento;
-    private javax.swing.JLabel jLabelVerificacionNombre;
-    private javax.swing.JLabel jLabelVerificacionTelefono;
     private javax.swing.JLabel jLabelVerificadorFechaInicio;
+    private javax.swing.JLabel jLabelVerificadorMeses;
     private javax.swing.JPanel jPanelAyuda;
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelLateral;

@@ -33,10 +33,171 @@ public class AltaUsuario extends javax.swing.JFrame {
         });
     }
     
-  
-    
+        private boolean verificarDatos() {
+            String regexNombre = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
+            String regexApellidos = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
+            String regexTelefono = "\\d{9}|\\d{11}";
+            String regexEmail = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b";
+            String regexDNI = "((([X-Zx-z])|([LM])){1}([-]?)((\\d){7})([-]?)([A-Za-z]))|((\\d{8})([-]?)([A-Za-z]))";
+
+            String nombre = jTextFieldNombre.getText();
+            String apellidos = jTextFieldApellidos.getText();
+            String telefono = jTextFieldTelefono.getText();
+            String email = jTextFieldEmail.getText();
+            String fechaNacimiento = jTextFieldFechaNacimiento.getText();
+            String dni = jTextFieldDNI.getText();
+
+            Pattern pattern;
+            Matcher matcher;
+            boolean camposCorrectos = true;
+
+            pattern = Pattern.compile(regexNombre);
+            matcher = pattern.matcher(nombre);
+            if (!matcher.matches()) {
+                jLabelVerificacionNombre.setText("El nombre debe contener solo letras y espacios");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificacionNombre.setText("");
+            }
+
+            pattern = Pattern.compile(regexApellidos);
+            matcher = pattern.matcher(apellidos);
+            if (!matcher.matches()) {
+                jLabelVerificacionApellido.setText("Los apellidos deben contener solo letras y espacios");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificacionApellido.setText("");
+            }
+
+            pattern = Pattern.compile(regexTelefono);
+            matcher = pattern.matcher(telefono);
+            if (!matcher.matches()) {
+                jLabelVerificacionTelefono.setText("El teléfono debe contener 9 u 11 dígitos");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificacionTelefono.setText("");
+            }
+
+            pattern = Pattern.compile(regexEmail, Pattern.CASE_INSENSITIVE);
+            matcher = pattern.matcher(email);
+            if (!matcher.matches()) {
+                jLabelVerificacionEmail.setText("El email no es válido");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificacionEmail.setText("");
+            }
+
+            pattern = Pattern.compile(regexDNI);
+            matcher = pattern.matcher(dni);
+            if (!matcher.matches()) {
+                jLabelVerificacionDNI.setText("Ingrese un DNI o NIE válido");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificacionDNI.setText("");
+            }
+
+            if (!verificarFecha(fechaNacimiento)) {
+                jLabelVerificacionFechaNacimiento.setText("La fecha de nacimiento no es válida");
+                camposCorrectos = false;
+            } else {
+                jLabelVerificacionFechaNacimiento.setText("");
+            }
+
+            return camposCorrectos;
+    }
+        
+        private void guardarDatos() {
+            String nombre = jTextFieldNombre.getText();
+            String apellidos = jTextFieldApellidos.getText();
+            String dni = jTextFieldDNI.getText();
+            String telefono = jTextFieldTelefono.getText();
+            String email = jTextFieldEmail.getText();
+            String fechaNacimiento = jTextFieldFechaNacimiento.getText();
+
+            //Formatear la fecha al formato YYYY-MM-DD para que MySQL lo acepte
+            String[] partesFecha = fechaNacimiento.split("[-/]");
+            String fechaFormateada = partesFecha[2] + "-" + partesFecha[1] + "-" + partesFecha[0];
+
+            try {
+                Connection conexion = ConexionBD.obtenerConexion();
+                String consulta = "INSERT INTO usuarios (DNI, nombre, apellidos, fecha_nacimiento, telefono, email) VALUES (?, ?, ?, ?, ?, ?)";
+                PreparedStatement statement = conexion.prepareStatement(consulta);
+                statement.setString(1, dni);
+                statement.setString(2, nombre);
+                statement.setString(3, apellidos);
+                statement.setString(4, fechaFormateada); // Utilizamos la fecha formateada
+                statement.setString(5, telefono);
+                statement.setString(6, email);
+
+                int filasInsertadas = statement.executeUpdate();
+
+                statement.close();
+                conexion.close();
+
+                if (filasInsertadas > 0) {
+                    System.out.println("Los datos se han insertado correctamente en la base de datos.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+
+
+
+    //Método para verificar la fecha de nacimiento, comprobando si la fecha es válida tanto en formato como en lógica (12 meses, 28, 30 o 31 días, año bisiesto, etc)
+    private boolean verificarFecha(String fecha) {
+        // Verificar el formato de la fecha usando una expresión regular
+        String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
+        if (!fecha.matches(regexFecha)) {
+            return false;
+        }
+
+        String[] partesFecha = fecha.split("[-/]");
+        int dia = Integer.parseInt(partesFecha[0]);
+        int mes = Integer.parseInt(partesFecha[1]);
+        int anio = Integer.parseInt(partesFecha[2]);
+        
+        if (mes < 1 || mes > 12) {
+            return false;
+        }
+        
+        int[] diasPorMes = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        if (mes == 2 && esAnioBisiesto(anio)) {
+            diasPorMes[1] = 29;
+        }
+        if (dia < 1 || dia > diasPorMes[mes - 1]) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private boolean esAnioBisiesto(int anio) {
+        return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+    }
+
 
     /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+           /* Set the Windows look and feel */
+           try {
+               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+           } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+               java.util.logging.Logger.getLogger(AltaUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+           }
+
+           /* Create and display the form */
+           java.awt.EventQueue.invokeLater(new Runnable() {
+               public void run() {
+                   new AltaUsuario().setVisible(true);
+               }
+           });
+   }
+    
+      /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
@@ -90,8 +251,18 @@ public class AltaUsuario extends javax.swing.JFrame {
         });
 
         jButtonGestionUsuarios.setText("GESTION DE USUARIOS");
+        jButtonGestionUsuarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionUsuariosActionPerformed(evt);
+            }
+        });
 
         jButtonNuevoAbono.setText("NUEVO ABONO");
+        jButtonNuevoAbono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonNuevoAbonoActionPerformed(evt);
+            }
+        });
 
         jPanelAyuda.setBackground(new java.awt.Color(255, 102, 102));
         jPanelAyuda.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
@@ -281,54 +452,47 @@ public class AltaUsuario extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(85, 85, 85)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonGuardarUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelDNI)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelNombre)
+                                    .addComponent(jLabelApellidos)
+                                    .addComponent(jLabelDNI))
+                                .addGap(69, 69, 69)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabelVerificacionEmail)
-                                            .addComponent(jLabelVerificacionTelefono))
-                                        .addContainerGap(688, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(100, 100, 100)
-                                        .addComponent(jTextFieldDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextFieldDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelVerificacionDNI)
-                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButtonGuardarUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabelVerificacionDNI))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabelNombre)
-                                            .addComponent(jLabelApellidos))
-                                        .addGap(69, 69, 69)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(95, 95, 95)
-                                                .addComponent(jLabelVerificacionFechaNacimiento))
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(jTextFieldNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
-                                                .addComponent(jTextFieldApellidos)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jTextFieldNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
+                                            .addComponent(jTextFieldApellidos))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabelVerificacionApellido)
-                                            .addComponent(jLabelVerificacionNombre)))
+                                            .addComponent(jLabelVerificacionNombre)))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelFechaNacimiento)
+                                    .addComponent(jLabelTelefono)
+                                    .addComponent(jLabelEmail))
+                                .addGap(45, 45, 45)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextFieldTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabelTelefono)
-                                            .addComponent(jLabelEmail)
-                                            .addComponent(jLabelFechaNacimiento))
-                                        .addGap(45, 45, 45)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(jTextFieldTelefono, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextFieldEmail, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jTextFieldFechaNacimiento)
-                                                .addGap(112, 112, 112)))))
-                                .addGap(347, 347, 347))))
+                                            .addComponent(jLabelVerificacionTelefono)
+                                            .addComponent(jLabelVerificacionEmail)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jTextFieldFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelVerificacionFechaNacimiento)))))
+                        .addContainerGap(402, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(33, 33, 33)
                         .addComponent(jLabelTituloVentana)
@@ -356,33 +520,29 @@ public class AltaUsuario extends javax.swing.JFrame {
                             .addComponent(jTextFieldApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabelVerificacionApellido))
                         .addGap(18, 18, 18)
-                        .addComponent(jLabelVerificacionTelefono)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelVerificacionEmail)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabelDNI)
-                                .addComponent(jTextFieldDNI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabelVerificacionDNI)))
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabelVerificacionFechaNacimiento)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelTelefono)
-                            .addComponent(jTextFieldTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelEmail)
-                            .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jTextFieldDNI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelDNI)
+                            .addComponent(jLabelVerificacionDNI))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelFechaNacimiento)
-                            .addComponent(jTextFieldFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(36, 36, 36)
+                            .addComponent(jTextFieldFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelVerificacionFechaNacimiento))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelTelefono)
+                            .addComponent(jTextFieldTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelVerificacionTelefono))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelEmail)
+                            .addComponent(jLabelVerificacionEmail))
+                        .addGap(77, 77, 77)
                         .addComponent(jButtonGuardarUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButtonCancelar)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jButtonCancelar))))
         );
 
         pack();
@@ -417,44 +577,11 @@ public class AltaUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldFechaNacimientoActionPerformed
 
     private void jButtonGuardarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarUsuarioActionPerformed
-        // Obtener los datos de los campos de texto
-        String nombre = jTextFieldNombre.getText();
-        String apellidos = jTextFieldApellidos.getText();
-        String dni = jTextFieldDNI.getText();
-        String telefono = jTextFieldTelefono.getText();
-        String email = jTextFieldEmail.getText();
-        String fechaNacimiento = jTextFieldFechaNacimiento.getText();
-
-        try {
-            // Establecer conexión con la base de datos
-            Connection conexion = ConexionBD.obtenerConexion();
-
-            // Preparar la sentencia SQL para insertar los datos
-            String consulta = "INSERT INTO usuarios (DNI, nombre, apellidos, fecha_nacimiento, telefono, email) VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement statement = conexion.prepareStatement(consulta);
-            statement.setString(1, dni);
-            statement.setString(2, nombre);
-            statement.setString(3, apellidos);
-            statement.setString(4, fechaNacimiento);
-            statement.setString(5, telefono);
-            statement.setString(6, email);
-
-            // Ejecutar la consulta SQL para insertar los datos
-            int filasInsertadas = statement.executeUpdate();
-
-            // Cerrar la conexión y liberar recursos
-            statement.close();
-            conexion.close();
-
-            // Si se insertaron correctamente, mostrar un mensaje de éxito
-            if (filasInsertadas > 0) {
-                System.out.println("Los datos se han insertado correctamente en la base de datos.");
-            }
-        } catch (SQLException ex) {
-            // Manejar cualquier error de SQL que pueda ocurrir
-            ex.printStackTrace();
+        if (verificarDatos()) {
+            guardarDatos();
+        } else {
+            System.out.println("La verificación de datos ha fallado.");
         }
-
     }//GEN-LAST:event_jButtonGuardarUsuarioActionPerformed
 
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
@@ -465,141 +592,20 @@ public class AltaUsuario extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldDNIActionPerformed
 
- private void verificarDatos() {
-        //Expresiones regulares para verificar cada campo
-        String regexNombre = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
-        String regexApellidos = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
-        String regexTelefono = "\\d{9}|\\d{11}";
-        String regexEmail = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b";
-        String regexDNI = "\\d{8}[A-Za-z] | [XYZxyz]\\d{7}[A-Za-z] | [XYZxyz]\\d{7}[-][A-Za-z]";
+    private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
+        GestionUsuarios nuevoFrame = new GestionUsuarios();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
+    }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
-        //String regexFechaNacimiento = "\\d{2}/\\d{2}/\\d{4}";
-        //String regexFechaNacimiento = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
+    private void jButtonNuevoAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoAbonoActionPerformed
+        AltaAbono nuevoFrame = new AltaAbono();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
+    }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
 
-        //Con esto obtenemos los valores de los campos de texto
-        String nombre = jTextFieldNombre.getText();
-        String apellidos = jTextFieldApellidos.getText();
-        String telefono = jTextFieldTelefono.getText();
-        String email = jTextFieldEmail.getText();
-        String fechaNacimiento = jTextFieldFechaNacimiento.getText();
-        String dni = jTextFieldDNI.getText();
-        
-        //Verificamos cada campo usando expresiones regulares
-        Pattern pattern;
-        Matcher matcher;
-        boolean camposCorrectos = true;
-        
-        pattern = Pattern.compile(regexNombre);
-        matcher = pattern.matcher(nombre);
-        if (!matcher.matches()) {
-            jLabelVerificacionNombre.setText("El nombre debe contener solo letras y espacios");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionNombre.setText("");
-        }
-        
-        pattern = Pattern.compile(regexApellidos);
-        matcher = pattern.matcher(apellidos);
-        if (!matcher.matches()) {
-            jLabelVerificacionApellido.setText("Los apellidos deben contener solo letras y espacios");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionApellido.setText("");
-        }
-        
-        pattern = Pattern.compile(regexTelefono);
-        matcher = pattern.matcher(telefono);
-        if (!matcher.matches()) {
-            jLabelVerificacionTelefono.setText("El teléfono debe contener 9 u 11 dígitos");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionTelefono.setText("");
-        }
-        
-        pattern = Pattern.compile(regexEmail, Pattern.CASE_INSENSITIVE);
-        matcher = pattern.matcher(email);
-        if (!matcher.matches()) {
-            jLabelVerificacionEmail.setText("El email no es válido");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionEmail.setText("");
-        }
-
-        pattern = Pattern.compile(regexDNI);
-        matcher = pattern.matcher(dni);
-        if (!matcher.matches()) {
-            jLabelVerificacionDNI.setText("Ingrese un DNI o NIE válido");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionDNI.setText("");
-        }
-        
-        // Verificar la fecha de nacimiento utilizando el método que creamos
-        if (!verificarFecha(fechaNacimiento)) {
-            jLabelVerificacionFechaNacimiento.setText("La fecha de nacimiento no es válida");
-            camposCorrectos = false;
-        } else {
-            jLabelVerificacionFechaNacimiento.setText("");
-        }
-
-        // Si todos los campos son correctos, realizar el guardado
-        if (camposCorrectos) {
-            // Aquí podrías llamar a un método para guardar los datos en la base de datos, por ejemplo
-            System.out.println("Los datos son correctos. Guardando usuario...");
-        }
-    }
-
-    //Método para verificar la fecha de nacimiento, comprobando si la fecha es válida tanto en formato como en lógica (12 meses, 28, 30 o 31 días, año bisiesto, etc)
-    private boolean verificarFecha(String fecha) {
-        // Verificar el formato de la fecha usando una expresión regular
-        String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
-        if (!fecha.matches(regexFecha)) {
-            return false;
-        }
-
-        String[] partesFecha = fecha.split("[-/]");
-        int dia = Integer.parseInt(partesFecha[0]);
-        int mes = Integer.parseInt(partesFecha[1]);
-        int anio = Integer.parseInt(partesFecha[2]);
-        
-        if (mes < 1 || mes > 12) {
-            return false;
-        }
-        
-        int[] diasPorMes = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        if (mes == 2 && esAnioBisiesto(anio)) {
-            diasPorMes[1] = 29;
-        }
-        if (dia < 1 || dia > diasPorMes[mes - 1]) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    private boolean esAnioBisiesto(int anio) {
-        return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
-    }
-
-
-    /**
-     * @param args the command line arguments
-     */
- public static void main(String args[]) {
-        /* Set the Windows look and feel */
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AltaUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AltaUsuario().setVisible(true);
-            }
-        });
-}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAyuda;

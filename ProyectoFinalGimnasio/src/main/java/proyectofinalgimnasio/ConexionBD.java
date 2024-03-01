@@ -20,4 +20,15 @@ public class ConexionBD {
     public static Connection obtenerConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
     }
+
+    public static void cerrarConexion(Connection conexion) {
+            try {
+                if (conexion != null && !conexion.isClosed()) {
+                    conexion.close();
+                    System.out.println("Conexión cerrada correctamente."); 
+                }
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
 }

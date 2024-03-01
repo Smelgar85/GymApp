@@ -4,9 +4,14 @@
  */
 package proyectofinalgimnasio;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Sebastián Melgar Marín
@@ -18,6 +23,50 @@ public class GimApp extends javax.swing.JFrame {
      */
     public GimApp() {
         initComponents();
+        
+        // Llamar al método para obtener y mostrar los abonos próximos a caducar al iniciar la aplicación
+        obtenerAbonosProximosCaducar();
+    }
+    
+    private void obtenerAbonosProximosCaducar() {
+        DefaultTableModel modelo = (DefaultTableModel) jTableVencimientos.getModel();
+        modelo.setRowCount(0); // Limpiar la tabla antes de agregar nuevos datos
+
+        // Obtener la fecha actual
+        LocalDate fechaActual = LocalDate.now();
+        
+        // Definir la consulta SQL para obtener los abonos próximos a caducar
+        String consulta = "SELECT u.nombre, u.apellidos, a.fecha_fin_contrato, u.telefono, u.email, a.premium " +
+                          "FROM usuarios u INNER JOIN abonos a ON u.DNI = a.usuario_dni " +
+                          "WHERE a.fecha_fin_contrato >= ? " +
+                          "ORDER BY a.fecha_fin_contrato ASC";
+        
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement pstmt = conexion.prepareStatement(consulta)) {
+            
+            // Establecer la fecha mínima para buscar abonos próximos a caducar (por ejemplo, 7 días en el futuro)
+            LocalDate fechaMinima = fechaActual.plusDays(7);
+            pstmt.setDate(1, java.sql.Date.valueOf(fechaMinima));
+            
+            // Ejecutar la consulta
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Recorrer los resultados y agregarlos a la tabla
+                while (rs.next()) {
+                    String nombre = rs.getString("nombre");
+                    String apellidos = rs.getString("apellidos");
+                    String finAbono = rs.getString("fecha_fin_contrato");
+                    String telefono = rs.getString("telefono");
+                    String email = rs.getString("email");
+                    boolean premium = rs.getBoolean("premium");
+                    
+                    // Agregar la fila a la tabla
+                    modelo.addRow(new Object[]{nombre, apellidos, finAbono, telefono, email, premium});
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            // Manejar el error de alguna manera (por ejemplo, mostrar un mensaje al usuario)
+        }
     }
 
     /**
@@ -38,7 +87,7 @@ public class GimApp extends javax.swing.JFrame {
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTableTabla = new javax.swing.JTable();
+        jTableVencimientos = new javax.swing.JTable();
         jLabelTituloVentana = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -150,7 +199,7 @@ public class GimApp extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jTableTabla.setModel(new javax.swing.table.DefaultTableModel(
+        jTableVencimientos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -173,7 +222,7 @@ public class GimApp extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTableTabla);
+        jScrollPane1.setViewportView(jTableVencimientos);
 
         jLabelTituloVentana.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabelTituloVentana.setText("VENCIMIENTOS PRÓXIMOS");
@@ -191,9 +240,9 @@ public class GimApp extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(33, 33, 33)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 735, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelTituloVentana))
-                        .addGap(0, 36, Short.MAX_VALUE))))
+                            .addComponent(jLabelTituloVentana)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 777, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(30, 30, 30))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -207,15 +256,17 @@ public class GimApp extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addComponent(jLabelTituloVentana)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonNuevoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoUsuarioActionPerformed
-         new AltaUsuario().setVisible(true);
+        AltaUsuario nuevoFrame = new AltaUsuario();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
     private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
@@ -223,17 +274,23 @@ public class GimApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAyudaActionPerformed
 
     private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
-        new GestionUsuarios().setVisible(true);
+        GestionUsuarios nuevoFrame = new GestionUsuarios();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
     private void jButtonNuevoAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoAbonoActionPerformed
-        new AltaAbono().setVisible(true);
+        AltaAbono nuevoFrame = new AltaAbono();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
 
     /**
      * @param args the command line arguments
      */
-public static void main(String args[]) {
+public static void main(String args[]) throws UnsupportedLookAndFeelException {
     /* Set the Windows look and feel */
     try {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -260,6 +317,6 @@ public static void main(String args[]) {
     private javax.swing.JPanel jPanelLateral;
     private javax.swing.JPanel jPanelLogo;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTableTabla;
+    private javax.swing.JTable jTableVencimientos;
     // End of variables declaration//GEN-END:variables
 }

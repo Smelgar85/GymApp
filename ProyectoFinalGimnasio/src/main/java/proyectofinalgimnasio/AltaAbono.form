@@ -36,72 +36,65 @@
                       <Component id="jLabelTituloVentana" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jButtonCancelar" alignment="0" min="-2" pref="118" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabelUsuario" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabelMeses" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabelPrecioMensual" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelFechaInicio" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelFechaFin" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabelDescuento" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabelFechaInicio" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTextFieldFechaInicio" min="-2" pref="85" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabelVerificadorFechaInicio" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="jLabelPrecioMensual" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelMeses" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="88" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jComboBoxPrecioMensual" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="117" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabelVerificacionEmail" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jLabelVerificacionTelefono" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="jTextFieldFechaInicio" min="-2" pref="73" max="-2" attributes="0"/>
+                                          <Component id="jTextFieldFechaFin" min="-2" pref="73" max="-2" attributes="0"/>
                                       </Group>
-                                  </Group>
-                                  <Component id="jTextFieldMeses" alignment="0" min="-2" pref="72" max="-2" attributes="0"/>
-                                  <Component id="jComboBoxDescuento" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jTextFieldUsuario" min="-2" pref="197" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jButtonBuscarUsuario" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabelVerificadorFechaInicio" pref="18" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="190" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jComboBoxPrecioMensual" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jComboBoxDescuento" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
-                                              <Component id="jLabelPrecioTotal" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Component id="jLabelFechaFin" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jTextFieldFechaFin" min="-2" pref="106" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                      <Component id="jLabelVerificacionFechaNacimiento" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jTextFieldMeses" min="-2" pref="72" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jLabelVerificadorMeses" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
+                              <EmptySpace min="-2" pref="310" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jButtonGuardarAbono" alignment="0" min="-2" pref="209" max="-2" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="jLabelUsuario" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jTextFieldUsuario" min="-2" pref="218" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jButtonBuscarUsuario" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jButtonCancelar" alignment="0" min="-2" pref="118" max="-2" attributes="0"/>
+                                  <Component id="jButtonGuardarAbono" alignment="0" min="-2" pref="209" max="-2" attributes="0"/>
+                                  <Component id="jLabelPrecioTotal" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jCheckBox1" min="-2" pref="44" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="373" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabelVerificacionApellido" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificacionNombre" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -120,49 +113,56 @@
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Component id="jLabelTituloVentana" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificacionNombre" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jButtonBuscarUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabelUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jTextFieldUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabelMeses" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jTextFieldMeses" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelVerificadorMeses" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabelPrecioMensual" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jComboBoxPrecioMensual" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabelDescuento" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jComboBoxDescuento" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="1" pref="1" max="-2" attributes="0"/>
+                              <Component id="jButtonBuscarUsuario" min="-2" pref="22" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jTextFieldFechaInicio" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabelFechaInicio" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelVerificadorFechaInicio" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelMeses" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldMeses" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificacionApellido" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelPrecioMensual" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificacionTelefono" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jComboBoxPrecioMensual" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelDescuento" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificacionEmail" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jComboBoxDescuento" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabelFechaInicio" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldFechaInicio" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificacionFechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabelFechaFin" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jTextFieldFechaFin" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelVerificadorFechaInicio" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jCheckBox1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jButtonGuardarAbono" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
-                          <Component id="jLabelPrecioTotal" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                      <Component id="jLabelPrecioTotal" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+                      <Component id="jButtonGuardarAbono" min="-2" pref="49" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jButtonCancelar" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -233,11 +233,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="GESTION DE USUARIOS"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonGestionUsuariosActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonNuevoAbono">
           <Properties>
             <Property name="text" type="java.lang.String" value="NUEVO ABONO"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonNuevoAbonoActionPerformed"/>
+          </Events>
         </Component>
         <Container class="javax.swing.JPanel" name="jPanelAyuda">
           <Properties>
@@ -382,6 +388,43 @@
         <Property name="text" type="java.lang.String" value="Fecha de inicio"/>
       </Properties>
     </Component>
+    <Component class="javax.swing.JLabel" name="jLabelFechaFin">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Fecha de fin"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="ABONO PREMIUM (10&#x20ac; mensuales m&#xe1;s)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelPrecioTotal">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Precio TOTAL:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelVerificadorFechaInicio">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="33" red="ff" type="rgb"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelVerificadorMeses">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="33" red="ff" type="rgb"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldUsuario">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
@@ -407,12 +450,21 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldFechaInicioActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButtonCancelar">
+    <Component class="javax.swing.JTextField" name="jTextFieldFechaFin">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Cancelar"/>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="toolTipText" type="java.lang.String" value="Introduce fecha de nacimiento v&#xe1;lida"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonCancelarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldFechaFinActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButtonBuscarUsuario">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Buscar..."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonBuscarUsuarioActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButtonGuardarAbono">
@@ -427,57 +479,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonGuardarAbonoActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabelVerificacionNombre">
+    <Component class="javax.swing.JButton" name="jButtonCancelar">
       <Properties>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="33" green="33" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelVerificacionApellido">
-      <Properties>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelVerificacionTelefono">
-      <Properties>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="ff" type="rgb"/>
-        </Property>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelVerificacionEmail">
-      <Properties>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelVerificacionFechaNacimiento">
-      <Properties>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelFechaFin">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI" size="14" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Fecha de fin"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="jTextFieldFechaFin">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="toolTipText" type="java.lang.String" value="Introduce fecha de nacimiento v&#xe1;lida"/>
+        <Property name="text" type="java.lang.String" value="Cancelar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldFechaFinActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonCancelarActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="jComboBoxPrecioMensual">
@@ -514,27 +521,7 @@
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JButton" name="jButtonBuscarUsuario">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Buscar..."/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBox1">
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="ABONO PREMIUM (10&#x20ac; mensuales m&#xe1;s)"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelPrecioTotal">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI" size="14" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Precio TOTAL:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelVerificadorFechaInicio">
     </Component>
   </SubComponents>
 </Form>
