@@ -30,7 +30,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         mostrarUltimosRegistros();
     }
 
-       private void mostrarUltimosRegistros() throws SQLException {
+    public void mostrarUltimosRegistros() throws SQLException {
             Connection conexion = ConexionBD.obtenerConexion();
 
             //Consulta SQL para obtener los últimos registros
@@ -65,7 +65,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
             }
         }
          
-    private void buscarUsuarios(String criterio, String busqueda) throws SQLException {
+    public void buscarUsuarios(String criterio, String busqueda) throws SQLException {
         //Obtener la conexión a la base de datos
         Connection conexion = ConexionBD.obtenerConexion();
 

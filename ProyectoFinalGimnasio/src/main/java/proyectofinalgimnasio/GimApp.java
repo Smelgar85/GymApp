@@ -4,11 +4,13 @@
  */
 package proyectofinalgimnasio;
 
+import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
@@ -23,8 +25,8 @@ public class GimApp extends javax.swing.JFrame {
      */
     public GimApp() {
         initComponents();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Ventana principal");
-        // Llamar al método para obtener y mostrar los abonos próximos a caducar al iniciar la aplicación
         obtenerAbonosProximosCaducar();
     }
     
@@ -34,23 +36,22 @@ public class GimApp extends javax.swing.JFrame {
 
         // Obtener la fecha actual
         LocalDate fechaActual = LocalDate.now();
-        
-        // Definir la consulta SQL para obtener los abonos próximos a caducar
-        String consulta = "SELECT u.nombre, u.apellidos, a.fecha_fin_contrato, u.telefono, u.email, a.premium " +
+
+        //Aquí se define el periodo máximo de contratos próximos a caducar que se mostrarán en la tabla
+        LocalDate fechaMaxima = fechaActual.plusDays(15);
+
+        String consulta = "SELECT u.nombre, u.apellidos, DATE_FORMAT(a.fecha_fin_contrato, '%d/%m/%Y') AS fecha_fin_contrato, u.telefono, u.email, a.premium " +
                           "FROM usuarios u INNER JOIN abonos a ON u.DNI = a.usuario_dni " +
-                          "WHERE a.fecha_fin_contrato >= ? " +
+                          "WHERE a.fecha_fin_contrato >= ? AND a.fecha_fin_contrato <= ? " +
                           "ORDER BY a.fecha_fin_contrato ASC";
-        
+
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement pstmt = conexion.prepareStatement(consulta)) {
-            
-            // Establecer la fecha mínima para buscar abonos próximos a caducar (por ejemplo, 7 días en el futuro)
-            LocalDate fechaMinima = fechaActual.plusDays(7);
-            pstmt.setDate(1, java.sql.Date.valueOf(fechaMinima));
-            
-            // Ejecutar la consulta
+
+            pstmt.setObject(1, fechaActual);
+            pstmt.setObject(2, fechaMaxima);
+
             try (ResultSet rs = pstmt.executeQuery()) {
-                // Recorrer los resultados y agregarlos a la tabla
                 while (rs.next()) {
                     String nombre = rs.getString("nombre");
                     String apellidos = rs.getString("apellidos");
@@ -58,16 +59,17 @@ public class GimApp extends javax.swing.JFrame {
                     String telefono = rs.getString("telefono");
                     String email = rs.getString("email");
                     boolean premium = rs.getBoolean("premium");
-                    
-                    // Agregar la fila a la tabla
+
                     modelo.addRow(new Object[]{nombre, apellidos, finAbono, telefono, email, premium});
                 }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            // Manejar el error de alguna manera (por ejemplo, mostrar un mensaje al usuario)
+            JOptionPane.showMessageDialog(this, "Error al conectar con la base de datos: " + ex.getMessage(), "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -82,8 +84,6 @@ public class GimApp extends javax.swing.JFrame {
         jButtonNuevoUsuario = new javax.swing.JButton();
         jButtonGestionUsuarios = new javax.swing.JButton();
         jButtonNuevoAbono = new javax.swing.JButton();
-        jPanelAyuda = new javax.swing.JPanel();
-        jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
         jButtonInicio = new javax.swing.JButton();
@@ -105,7 +105,7 @@ public class GimApp extends javax.swing.JFrame {
             }
         });
 
-        jButtonGestionUsuarios.setText("GESTION DE USUARIOS");
+        jButtonGestionUsuarios.setText("MODIFICACIONES");
         jButtonGestionUsuarios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonGestionUsuariosActionPerformed(evt);
@@ -119,33 +119,6 @@ public class GimApp extends javax.swing.JFrame {
             }
         });
 
-        jPanelAyuda.setBackground(new java.awt.Color(255, 102, 102));
-        jPanelAyuda.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-
-        jButtonAyuda.setText("AYUDA");
-        jButtonAyuda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAyudaActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanelAyudaLayout = new javax.swing.GroupLayout(jPanelAyuda);
-        jPanelAyuda.setLayout(jPanelAyudaLayout);
-        jPanelAyudaLayout.setHorizontalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanelAyudaLayout.setVerticalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout jPanelLateralLayout = new javax.swing.GroupLayout(jPanelLateral);
         jPanelLateral.setLayout(jPanelLateralLayout);
         jPanelLateralLayout.setHorizontalGroup(
@@ -157,19 +130,17 @@ public class GimApp extends javax.swing.JFrame {
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jPanelAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanelLateralLayout.setVerticalGroup(
             jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
-                .addComponent(jPanelAyuda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(314, Short.MAX_VALUE))
         );
 
         jPanelHeader.setBackground(new java.awt.Color(255, 102, 102));
@@ -277,10 +248,6 @@ public class GimApp extends javax.swing.JFrame {
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
-    private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
-        
-    }//GEN-LAST:event_jButtonAyudaActionPerformed
-
     private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
         GestionUsuarios nuevoFrame = new GestionUsuarios();
         nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
@@ -319,13 +286,11 @@ public static void main(String args[]) throws UnsupportedLookAndFeelException {
 }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAyuda;
     private javax.swing.JButton jButtonGestionUsuarios;
     private javax.swing.JButton jButtonInicio;
     private javax.swing.JButton jButtonNuevoAbono;
     private javax.swing.JButton jButtonNuevoUsuario;
     private javax.swing.JLabel jLabelTituloVentana;
-    private javax.swing.JPanel jPanelAyuda;
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelLateral;
     private javax.swing.JPanel jPanelLogo;

@@ -4,12 +4,14 @@
  */
 package proyectofinalgimnasio;
 
+import java.awt.Toolkit;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,16 +28,11 @@ public class AltaUsuario extends javax.swing.JFrame {
      */
     public AltaUsuario() {
         initComponents();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Altas");
-        jButtonGuardarUsuario.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                verificarDatos();
-            }
-        });
     }
     
-        private boolean verificarDatos() {
+    public boolean verificarDatos() {
             String regexNombre = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
             String regexApellidos = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
             String regexTelefono = "\\d{9}|\\d{11}";
@@ -104,11 +101,16 @@ public class AltaUsuario extends javax.swing.JFrame {
             } else {
                 jLabelVerificacionFechaNacimiento.setText("");
             }
+            
+             if (dniExistente(dni)) {
+                JOptionPane.showMessageDialog(this, "Ya existe un usuario con este DNI", "Error", JOptionPane.ERROR_MESSAGE);
+                camposCorrectos = false;
+    }
 
             return camposCorrectos;
     }
         
-        private void guardarDatos() {
+    private void guardarDatos() {
             String nombre = jTextFieldNombre.getText();
             String apellidos = jTextFieldApellidos.getText();
             String dni = jTextFieldDNI.getText();
@@ -144,11 +146,7 @@ public class AltaUsuario extends javax.swing.JFrame {
             }
         }
 
-
-
-
-    //Método para verificar la fecha de nacimiento, comprobando si la fecha es válida tanto en formato como en lógica (12 meses, 28, 30 o 31 días, año bisiesto, etc)
-    private boolean verificarFecha(String fecha) {
+    public boolean verificarFecha(String fecha) {
         //Verificar el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
         if (!fecha.matches(regexFecha)) {
@@ -175,8 +173,30 @@ public class AltaUsuario extends javax.swing.JFrame {
         return true;
     }
 
-    private boolean esAnioBisiesto(int anio) {
+    public boolean esAnioBisiesto(int anio) {
         return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+    }
+    
+    private boolean dniExistente(String dni) {
+        try {
+            Connection conexion = ConexionBD.obtenerConexion();
+            String consulta = "SELECT COUNT(*) FROM usuarios WHERE DNI = ?";
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            statement.setString(1, dni);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+
+            statement.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
 
@@ -212,8 +232,6 @@ public class AltaUsuario extends javax.swing.JFrame {
         jButtonNuevoUsuario = new javax.swing.JButton();
         jButtonGestionUsuarios = new javax.swing.JButton();
         jButtonNuevoAbono = new javax.swing.JButton();
-        jPanelAyuda = new javax.swing.JPanel();
-        jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
         jButtonInicio = new javax.swing.JButton();
@@ -267,33 +285,6 @@ public class AltaUsuario extends javax.swing.JFrame {
             }
         });
 
-        jPanelAyuda.setBackground(new java.awt.Color(255, 102, 102));
-        jPanelAyuda.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-
-        jButtonAyuda.setText("AYUDA");
-        jButtonAyuda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAyudaActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanelAyudaLayout = new javax.swing.GroupLayout(jPanelAyuda);
-        jPanelAyuda.setLayout(jPanelAyudaLayout);
-        jPanelAyudaLayout.setHorizontalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanelAyudaLayout.setVerticalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout jPanelLateralLayout = new javax.swing.GroupLayout(jPanelLateral);
         jPanelLateral.setLayout(jPanelLateralLayout);
         jPanelLateralLayout.setHorizontalGroup(
@@ -305,19 +296,17 @@ public class AltaUsuario extends javax.swing.JFrame {
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jPanelAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanelLateralLayout.setVerticalGroup(
             jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
-                .addComponent(jPanelAyuda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(314, Short.MAX_VALUE))
         );
 
         jPanelHeader.setBackground(new java.awt.Color(255, 102, 102));
@@ -562,10 +551,6 @@ public class AltaUsuario extends javax.swing.JFrame {
         //TODO add your handling code here:
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
-    private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
-        //TODO add your handling code here:
-    }//GEN-LAST:event_jButtonAyudaActionPerformed
-
     private void jTextFieldNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldNombreActionPerformed
         
     }//GEN-LAST:event_jTextFieldNombreActionPerformed
@@ -590,6 +575,10 @@ public class AltaUsuario extends javax.swing.JFrame {
         if (verificarDatos()) {
             guardarDatos();
             JOptionPane.showMessageDialog(this, "Usuario creado correctamente", "Info", JOptionPane.INFORMATION_MESSAGE);
+            GimApp nuevoFrame = new GimApp();
+            nuevoFrame.setLocation(this.getLocation());
+            nuevoFrame.setVisible(true);
+            this.dispose();
         } 
     }//GEN-LAST:event_jButtonGuardarUsuarioActionPerformed
 
@@ -627,7 +616,6 @@ public class AltaUsuario extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAyuda;
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonGestionUsuarios;
     private javax.swing.JButton jButtonGuardarUsuario;
@@ -647,7 +635,6 @@ public class AltaUsuario extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelVerificacionFechaNacimiento;
     private javax.swing.JLabel jLabelVerificacionNombre;
     private javax.swing.JLabel jLabelVerificacionTelefono;
-    private javax.swing.JPanel jPanelAyuda;
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelLateral;
     private javax.swing.JPanel jPanelLogo;

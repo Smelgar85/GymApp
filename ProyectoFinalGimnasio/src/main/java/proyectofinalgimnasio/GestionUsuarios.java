@@ -1,6 +1,7 @@
 
 package proyectofinalgimnasio;
 
+import java.awt.Toolkit;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionEvent;
@@ -25,9 +26,31 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     private String dniUsuarioSeleccionado;
     private double precioTotal;
     private double total;
-        
+    
+    public void setNombreTextField(String texto) {
+        jTextFieldNombre.setText(texto);
+    }
+
+    public void setApellidosTextField(String texto) {
+        jTextFieldApellidos.setText(texto);
+    }
+
+    public void setTelefonoTextField(String texto) {
+        jTextFieldTelefono.setText(texto);
+    }
+
+    public void setEmailTextField(String texto) {
+        jTextFieldEmail.setText(texto);
+    }
+
+    public void setFechaNacimientoTextField(String texto) {
+        jTextFieldFechaNacimiento.setText(texto);
+    }
+
+            
     public GestionUsuarios() {
         initComponents();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Gestión");
         jButtonRenovarAbono.addActionListener(new ActionListener() {
             @Override
@@ -115,7 +138,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         double descuentoDouble = Double.parseDouble(descuento);
         total *= (1 - descuentoDouble / 100);
 
-        jLabelPrecioTotal.setText(String.format("%.2f", total) + "€");
+        jLabelPrecioTotal.setText("Precio total: " + String.format("%.2f", total) + "€");
         
         if (camposCorrectos) {
             String fechaFin = jTextFieldFechaFin.getText();
@@ -127,7 +150,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }
     
-    private boolean verificarDatosUsuario() {
+    public boolean verificarDatosUsuario() {
             String regexNombre = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
             String regexApellidos = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
             String regexTelefono = "\\d{9}|\\d{11}";
@@ -206,7 +229,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }
     
-    private boolean verificarFecha(String fecha) {
+    public boolean verificarFecha(String fecha) {
         // Verificar el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
         if (!fecha.matches(regexFecha)) {
@@ -275,7 +298,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             jTextFieldFechaFin.setText(fechaFinStr);
         }
     
-    private double calcularPrecioMensual(double precioTotal, int duracionMeses) {
+    public double calcularPrecioMensual(double precioTotal, int duracionMeses) {
         return precioTotal / duracionMeses;
     }
 
@@ -311,7 +334,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }
     
-    private boolean esAnioBisiesto(int anio) {
+    public boolean esAnioBisiesto(int anio) {
         return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
     }
     
@@ -436,7 +459,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }
   
-    private boolean actualizarAbonoEnBD(String dniUsuario, String fechaInicio, String fechaFin, double precioTotal) {
+    public boolean actualizarAbonoEnBD(String dniUsuario, String fechaInicio, String fechaFin, double precioTotal) {
         //Con esto convertimos las fechas de inicio y fin al formato que espera MySQL (YYYY-MM-DD)
         DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -546,7 +569,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             int filasAfectadas = pstmtAbonos.executeUpdate();
 
             if (filasAfectadas > 0) {
-                JOptionPane.showMessageDialog(this, "Usuario y abono asociado borrados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Abono borrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 // Limpiar los campos de la interfaz de usuario
                 jTextFieldFechaInicio.setText("");
                 jTextFieldFechaFin.setText("");
@@ -582,8 +605,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         jButtonNuevoUsuario = new javax.swing.JButton();
         jButtonGestionUsuarios = new javax.swing.JButton();
         jButtonNuevoAbono = new javax.swing.JButton();
-        jPanelAyuda = new javax.swing.JPanel();
-        jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
         jButtonInicio = new javax.swing.JButton();
@@ -657,33 +678,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             }
         });
 
-        jPanelAyuda.setBackground(new java.awt.Color(255, 102, 102));
-        jPanelAyuda.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-
-        jButtonAyuda.setText("AYUDA");
-        jButtonAyuda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAyudaActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanelAyudaLayout = new javax.swing.GroupLayout(jPanelAyuda);
-        jPanelAyuda.setLayout(jPanelAyudaLayout);
-        jPanelAyudaLayout.setHorizontalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanelAyudaLayout.setVerticalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout jPanelLateralLayout = new javax.swing.GroupLayout(jPanelLateral);
         jPanelLateral.setLayout(jPanelLateralLayout);
         jPanelLateralLayout.setHorizontalGroup(
@@ -695,19 +689,17 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jPanelAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanelLateralLayout.setVerticalGroup(
             jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
-                .addComponent(jPanelAyuda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(314, Short.MAX_VALUE))
         );
 
         jPanelHeader.setBackground(new java.awt.Color(255, 102, 102));
@@ -1140,10 +1132,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
-    private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonAyudaActionPerformed
-
     private void jTextFieldFechaInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFechaInicioActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldFechaInicioActionPerformed
@@ -1251,7 +1239,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         if (opcion == JOptionPane.YES_OPTION) {
             String dni = jTextFieldDNI.getText();
             borrarUsuarioEnBD(dni);
-            JOptionPane.showMessageDialog(this, "Usuario eliminado correctamente", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Usuario y abono eliminados correctamente", "Info", JOptionPane.INFORMATION_MESSAGE);
     }
     }//GEN-LAST:event_jButtonEliminarUsuarioActionPerformed
 
@@ -1279,7 +1267,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAyuda;
     private javax.swing.JButton jButtonBuscarUsuario;
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonEliminarAbono;
@@ -1315,7 +1302,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     private javax.swing.JLabel jLabelVerificacionTelefono;
     private javax.swing.JLabel jLabelVerificadorFechaInicio;
     private javax.swing.JLabel jLabelVerificadorMeses;
-    private javax.swing.JPanel jPanelAyuda;
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelLateral;
     private javax.swing.JPanel jPanelLogo;

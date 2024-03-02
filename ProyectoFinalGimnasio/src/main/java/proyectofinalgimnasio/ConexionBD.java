@@ -18,9 +18,9 @@ public class ConexionBD {
     //private static final String USUARIO = "root";
     //private static final String CONTRASENA = "root";
 
-    private static final String URL = "jdbc:mysql://158.178.203.92:3306/gimnasio";
-    private static final String USUARIO = "klexos";
-    private static final String CONTRASENA = "RE1P+QPp";
+    private static final String URL = "jdbc:mysql://sql11.freesqldatabase.com:3306/sql11688015";
+    private static final String USUARIO = "sql11688015";
+    private static final String CONTRASENA = "SYUzQhgjF4";
 
     
     public static Connection obtenerConexion() throws SQLException {

@@ -1,6 +1,7 @@
 
 package proyectofinalgimnasio;
 
+import java.awt.Toolkit;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 
 public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionadoListener {
@@ -23,11 +26,12 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
     
     public AltaAbono() {
         initComponents();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Abonos");
         jButtonGuardarAbono.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                verificarDatos();
+             
             }
         });
 
@@ -68,12 +72,13 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         
     }
     
+        
     @Override
     public void onUsuarioSeleccionado(String nombre, String apellidos, String dni) {
         mostrarUsuarioSeleccionado(nombre, apellidos, dni);
     }
   
-    private boolean verificarFecha(String fecha) {
+    public boolean verificarFecha(String fecha) {
         // Verificar el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
         if (!fecha.matches(regexFecha)) {
@@ -100,7 +105,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         return true;
     }
 
-    private void verificarFechaInicio() {
+    public void verificarFechaInicio() {
         String fechaInicioStr = jTextFieldFechaInicio.getText();
 
         if (!verificarFecha(fechaInicioStr)) {
@@ -112,9 +117,9 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         calcularFechaFin(); // Llamar a calcularFechaFin después de verificar la fecha
     }
 
-        private void calcularFechaFin() {
-            if (!jLabelVerificadorFechaInicio.getText().isEmpty()) {
-                return;
+    public void calcularFechaFin() {
+        if (!jLabelVerificadorFechaInicio.getText().isEmpty()) {
+            return;
             }
 
             String fechaInicioStr = jTextFieldFechaInicio.getText();
@@ -142,7 +147,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
             jTextFieldFechaFin.setText(fechaFinStr);
         }
 
-    private void calcularPrecioTotal() {
+    public void calcularPrecioTotal() {
         String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
         String descuento = (String) jComboBoxDescuento.getSelectedItem();
         String numeroMeses = jTextFieldMeses.getText();
@@ -170,11 +175,11 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
             double descuentoDouble = Double.parseDouble(descuento);
             total *= (1 - descuentoDouble / 100);
 
-            jLabelPrecioTotal.setText(String.format("%.2f", total) + "€");
+            jLabelPrecioTotal.setText("Precio Total: " + String.format("%.2f", total) + "€");
         }
     }
 
-    private void verificarDatos() {
+    public void verificarDatos() {
         String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
         String descuento = (String) jComboBoxDescuento.getSelectedItem();
         String numeroMeses = jTextFieldMeses.getText();
@@ -220,18 +225,25 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         jLabelPrecioTotal.setText(String.format("%.2f", total) + "€");
 
         if (camposCorrectos) {
-                String fechaFin = jTextFieldFechaFin.getText();
-                // Ahora pasamos 'total' directamente a insertarAbonoEnBD
-                if (insertarAbonoEnBD(fechaInicio, fechaFin, total)) {
-                    System.out.println("Abono guardado exitosamente.");
-                } else {
-                    System.out.println("Error al guardar el abono en la base de datos.");
-                }
+            //Verificamos si el usuario ya tiene un abono existente
+            if (existeAbonoParaUsuario(dniUsuarioSeleccionado)) {
+                JOptionPane.showMessageDialog(this, "El usuario ya tiene un abono existente", "Error", JOptionPane.ERROR_MESSAGE);
+                return; // No intentar insertar un nuevo abono si ya existe uno
+            }
+
+            //Si el usuario no tiene un abono existente, se inserta
+            String fechaFin = jTextFieldFechaFin.getText();
+            // Ahora pasamos 'total' directamente a insertarAbonoEnBD
+            if (insertarAbonoEnBD(fechaInicio, fechaFin, total)) {
+                JOptionPane.showMessageDialog(this, "Abono guardado con éxito", "Info", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar el abono", "Error", JOptionPane.ERROR);
+            }
         }
     }
 
 
-    private boolean esAnioBisiesto(int anio) {
+    public boolean esAnioBisiesto(int anio) {
         return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
     }
     
@@ -281,7 +293,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
     }
 
     
-    private double calcularPrecioMensual(double precioTotal, int duracionMeses) {
+    public double calcularPrecioMensual(double precioTotal, int duracionMeses) {
         return precioTotal / duracionMeses;
     }
     
@@ -301,6 +313,24 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
             System.out.println(fechaInicioFormatoSQL); // Salida: 2024-03-01
         }
     }
+    
+    public boolean existeAbonoParaUsuario(String dni) {
+        String consulta = "SELECT COUNT(*) FROM abonos WHERE usuario_dni = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement pstmt = conexion.prepareStatement(consulta)) {
+
+            pstmt.setString(1, dni);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next(); // Mover al primer resultado
+            int cantidadAbonos = resultado.getInt(1);
+
+            return cantidadAbonos > 0; // Si hay algún abono para el usuario, retorna true
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false; // Si ocurre algún error, retorna false
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -315,8 +345,6 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         jButtonNuevoUsuario = new javax.swing.JButton();
         jButtonGestionUsuarios = new javax.swing.JButton();
         jButtonNuevoAbono = new javax.swing.JButton();
-        jPanelAyuda = new javax.swing.JPanel();
-        jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
         jButtonInicio = new javax.swing.JButton();
@@ -343,6 +371,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         jCheckBox1 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(null);
         setResizable(false);
 
         jPanelLateral.setBackground(new java.awt.Color(255, 102, 102));
@@ -370,33 +399,6 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
             }
         });
 
-        jPanelAyuda.setBackground(new java.awt.Color(255, 102, 102));
-        jPanelAyuda.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-
-        jButtonAyuda.setText("AYUDA");
-        jButtonAyuda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAyudaActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanelAyudaLayout = new javax.swing.GroupLayout(jPanelAyuda);
-        jPanelAyuda.setLayout(jPanelAyudaLayout);
-        jPanelAyudaLayout.setHorizontalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanelAyudaLayout.setVerticalGroup(
-            jPanelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAyudaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout jPanelLateralLayout = new javax.swing.GroupLayout(jPanelLateral);
         jPanelLateral.setLayout(jPanelLateralLayout);
         jPanelLateralLayout.setHorizontalGroup(
@@ -408,19 +410,17 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jPanelAyuda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanelLateralLayout.setVerticalGroup(
             jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
-                .addComponent(jPanelAyuda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(314, Short.MAX_VALUE))
         );
 
         jPanelHeader.setBackground(new java.awt.Color(255, 102, 102));
@@ -569,41 +569,36 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
                     .addGroup(layout.createSequentialGroup()
                         .addGap(85, 85, 85)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelFechaInicio)
-                                    .addComponent(jLabelFechaFin)
-                                    .addComponent(jLabelDescuento)
-                                    .addComponent(jLabelPrecioMensual)
-                                    .addComponent(jLabelMeses))
-                                .addGap(88, 88, 88)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jTextFieldFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextFieldFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabelVerificadorMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabelUsuario)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelVerificadorFechaInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
-                                        .addGap(190, 190, 190))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jComboBoxPrecioMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jComboBoxDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelVerificadorMeses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGap(310, 310, 310))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabelUsuario)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButtonBuscarUsuario)
+                                        .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButtonBuscarUsuario)))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabelFechaInicio)
+                                            .addComponent(jLabelFechaFin)
+                                            .addComponent(jLabelDescuento)
+                                            .addComponent(jLabelPrecioMensual)
+                                            .addComponent(jLabelMeses))
+                                        .addGap(88, 88, 88)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addComponent(jTextFieldFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(jTextFieldFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabelVerificadorFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jComboBoxPrecioMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jComboBoxDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabelPrecioTotal)
                                     .addGroup(layout.createSequentialGroup()
@@ -611,7 +606,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                                .addContainerGap(398, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -634,7 +629,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabelMeses)
                                     .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabelVerificadorMeses))
+                                    .addComponent(jLabelVerificadorMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabelPrecioMensual)
@@ -665,8 +660,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
                         .addGap(38, 38, 38)
                         .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButtonCancelar)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jButtonCancelar))))
         );
 
         pack();
@@ -679,10 +673,6 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
-    private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonAyudaActionPerformed
-
     private void jTextFieldUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldUsuarioActionPerformed
         
     }//GEN-LAST:event_jTextFieldUsuarioActionPerformed
@@ -692,7 +682,11 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
     }//GEN-LAST:event_jTextFieldFechaInicioActionPerformed
 
     private void jButtonGuardarAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarAbonoActionPerformed
-        
+            verificarDatos();
+            GimApp nuevoFrame = new GimApp();
+            nuevoFrame.setLocation(this.getLocation());
+            nuevoFrame.setVisible(true);
+            this.dispose();
     }//GEN-LAST:event_jButtonGuardarAbonoActionPerformed
 
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
@@ -759,9 +753,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
     }
 
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAyuda;
     private javax.swing.JButton jButtonBuscarUsuario;
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonGestionUsuarios;
@@ -783,7 +775,6 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
     private javax.swing.JLabel jLabelUsuario;
     private javax.swing.JLabel jLabelVerificadorFechaInicio;
     private javax.swing.JLabel jLabelVerificadorMeses;
-    private javax.swing.JPanel jPanelAyuda;
     private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelLateral;
     private javax.swing.JPanel jPanelLogo;
