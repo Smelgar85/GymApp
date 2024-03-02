@@ -9,6 +9,13 @@ package proyectofinalgimnasio;
  * @author Sebastián Melgar Marín
  */
 public interface UsuarioSeleccionadoListener {
+
+    /**
+     *
+     * @param nombre
+     * @param apellidos
+     * @param dni
+     */
     void onUsuarioSeleccionado(String nombre, String apellidos, String dni);
 }
 

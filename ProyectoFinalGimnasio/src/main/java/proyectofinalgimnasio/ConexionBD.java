@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 public class ConexionBD {
     
     //private static final String URL = "jdbc:mysql://localhost:3306/gimnasio";
@@ -22,11 +23,19 @@ public class ConexionBD {
     private static final String USUARIO = "sql11688015";
     private static final String CONTRASENA = "SYUzQhgjF4";
 
-    
+    /**
+     *
+     * @return
+     * @throws SQLException
+     */
     public static Connection obtenerConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
     }
 
+    /**
+     *
+     * @param conexion
+     */
     public static void cerrarConexion(Connection conexion) {
             try {
                 if (conexion != null && !conexion.isClosed()) {

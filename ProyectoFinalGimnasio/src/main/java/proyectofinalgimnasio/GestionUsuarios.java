@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,63 +20,74 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-
+/**
+ *
+ * @author Sebastián Melgar Marín
+ */
 public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSeleccionadoListener {
-    private String dniUsuarioSeleccionado;
     private double precioTotal;
-    private double total;
     
+    /**
+     *
+     * @param texto
+     */
     public void setNombreTextField(String texto) {
         jTextFieldNombre.setText(texto);
     }
 
+    /**
+     *
+     * @param texto
+     */
     public void setApellidosTextField(String texto) {
         jTextFieldApellidos.setText(texto);
     }
 
+    /**
+     *
+     * @param texto
+     */
     public void setTelefonoTextField(String texto) {
         jTextFieldTelefono.setText(texto);
     }
 
+    /**
+     *
+     * @param texto
+     */
     public void setEmailTextField(String texto) {
         jTextFieldEmail.setText(texto);
     }
 
+    /**
+     *
+     * @param texto
+     */
     public void setFechaNacimientoTextField(String texto) {
         jTextFieldFechaNacimiento.setText(texto);
     }
 
-            
+    /**
+     *
+     */
     public GestionUsuarios() {
         initComponents();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Gestión");
-        jButtonRenovarAbono.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                verificarDatosAbono();
-            }
+        jButtonRenovarAbono.addActionListener((ActionEvent e) -> {
+            verificarDatosAbono();
         });
 
-        jComboBoxPrecioMensual.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calcularPrecioTotal();
-            }
+        jComboBoxPrecioMensual.addActionListener((ActionEvent e) -> {
+            calcularPrecioTotal();
         });
 
-        jComboBoxDescuento.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calcularPrecioTotal();
-            }
+        jComboBoxDescuento.addActionListener((ActionEvent e) -> {
+            calcularPrecioTotal();
         });
 
-        jCheckBox1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calcularPrecioTotal();
-            }
+        jCheckBox1.addActionListener((ActionEvent e) -> {
+            calcularPrecioTotal();
         });
 
         jTextFieldMeses.addFocusListener(new FocusAdapter() {
@@ -150,6 +160,10 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean verificarDatosUsuario() {
             String regexNombre = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
             String regexApellidos = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
@@ -212,7 +226,18 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             return camposCorrectos;
     }
     
+    /**
+     *
+     */
     public class FechaFormato {
+
+        /**
+         *
+         * @param fechaStr
+         * @param formatoEntrada
+         * @param formatoSalida
+         * @return
+         */
         public static String convertirFecha(String fechaStr, String formatoEntrada, String formatoSalida) {
             // Convertir de formato de entrada a LocalDate
             DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern(formatoEntrada);
@@ -223,12 +248,22 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             return fecha.format(formatterSalida);
         }
 
+        /**
+         *
+         * @param fechaStr
+         * @return
+         */
         public static String convertirFechaMySQL(String fechaStr) {
             // Convertir de "dd/MM/yyyy" a "yyyy-MM-dd" (formato MySQL)
             return convertirFecha(fechaStr, "dd/MM/yyyy", "yyyy-MM-dd");
         }
     }
     
+    /**
+     *
+     * @param fecha
+     * @return
+     */
     public boolean verificarFecha(String fecha) {
         // Verificar el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
@@ -249,11 +284,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         if (mes == 2 && esAnioBisiesto(anio)) {
             diasPorMes[1] = 29;
         }
-        if (dia < 1 || dia > diasPorMes[mes - 1]) {
-            return false;
-        }
-
-        return true;
+        return !(dia < 1 || dia > diasPorMes[mes - 1]);
     }
     
     private void verificarFechaInicio() {
@@ -298,6 +329,12 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             jTextFieldFechaFin.setText(fechaFinStr);
         }
     
+    /**
+     *
+     * @param precioTotal
+     * @param duracionMeses
+     * @return
+     */
     public double calcularPrecioMensual(double precioTotal, int duracionMeses) {
         return precioTotal / duracionMeses;
     }
@@ -334,6 +371,11 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }
     
+    /**
+     *
+     * @param anio
+     * @return
+     */
     public boolean esAnioBisiesto(int anio) {
         return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
     }
@@ -354,49 +396,47 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
    
     private void rellenarDatosUsuario(String dni) {
         try {
-            // Realiza la conexión a la base de datos
-            Connection conexion = ConexionBD.obtenerConexion();
-
             // Define la consulta SQL para obtener los datos del usuario
-            String query = "SELECT * FROM usuarios WHERE DNI = ?";
-
-            // Prepara la consulta
-            PreparedStatement pstmt = conexion.prepareStatement(query);
-
-            // Establece el DNI como parámetro en la consulta
-            pstmt.setString(1, dni);
-
-            // Ejecuta la consulta
-            ResultSet rs = pstmt.executeQuery();
-
-            // Verifica si se encontraron resultados
-            if (rs.next()) {
-                // Obtiene los datos del usuario de la consulta
-                String nombre = rs.getString("nombre");
-                String apellidos = rs.getString("apellidos");
-                // Convertir la fecha de nacimiento al formato dd/mm/yyyy
-                String fechaNacimientoSQL = rs.getString("fecha_nacimiento");
-                LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoSQL);
-                String fechaNacimientoFormateada = fechaNacimiento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                String telefono = rs.getString("telefono");
-                String email = rs.getString("email");
-
-                // Rellena los campos de la interfaz de usuario con los datos obtenidos
-                jTextFieldDNI.setText(dni);
-                jTextFieldNombre.setText(nombre);
-                jTextFieldApellidos.setText(apellidos);
-                jTextFieldFechaNacimiento.setText(fechaNacimientoFormateada);
-                jTextFieldTelefono.setText(telefono);
-                jTextFieldEmail.setText(email);
+            try ( // Realiza la conexión a la base de datos
+                    Connection conexion = ConexionBD.obtenerConexion()) {
+                // Define la consulta SQL para obtener los datos del usuario
+                String query = "SELECT * FROM usuarios WHERE DNI = ?";
+                
+                // Establece el DNI como parámetro en la consulta
+                try ( // Prepara la consulta
+                        PreparedStatement pstmt = conexion.prepareStatement(query)) {
+                    // Establece el DNI como parámetro en la consulta
+                    pstmt.setString(1, dni);
+                    
+                    // Verifica si se encontraron resultados
+                    try ( // Ejecuta la consulta
+                            ResultSet rs = pstmt.executeQuery()) {
+                        // Verifica si se encontraron resultados
+                        if (rs.next()) {
+                            // Obtiene los datos del usuario de la consulta
+                            String nombre = rs.getString("nombre");
+                            String apellidos = rs.getString("apellidos");
+                            // Convertir la fecha de nacimiento al formato dd/mm/yyyy
+                            String fechaNacimientoSQL = rs.getString("fecha_nacimiento");
+                            LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoSQL);
+                            String fechaNacimientoFormateada = fechaNacimiento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                            String telefono = rs.getString("telefono");
+                            String email = rs.getString("email");
+                            
+                            // Rellena los campos de la interfaz de usuario con los datos obtenidos
+                            jTextFieldDNI.setText(dni);
+                            jTextFieldNombre.setText(nombre);
+                            jTextFieldApellidos.setText(apellidos);
+                            jTextFieldFechaNacimiento.setText(fechaNacimientoFormateada);
+                            jTextFieldTelefono.setText(telefono);
+                            jTextFieldEmail.setText(email);
+                        }
+                        // Cierra los recursos de la base de datos
+                    }
+                }
             }
-
-            // Cierra los recursos de la base de datos
-            rs.close();
-            pstmt.close();
-            conexion.close();
         } catch (SQLException ex) {
             // Si ocurre algún error durante la consulta, muestra un mensaje de error
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al consultar la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -406,59 +446,63 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             // Definimos la consulta SQL para obtener el abono del usuario
             String query = "SELECT * FROM abonos WHERE usuario_dni = ?";
 
-            // Preparamos la consulta
-            PreparedStatement pstmt = conexion.prepareStatement(query);
-            pstmt.setString(1, dni); // Establecemos el DNI como parámetro en la consulta
-
-            // Ejecutamos la consulta
-            ResultSet rs = pstmt.executeQuery();
-
-            // Verificamos si se encontraron resultados
-            if (rs.next()) {
-                // Mensaje de depuración para verificar si se encontraron resultados
-                
-                // Obtenemos los datos del abono de la consulta
-                String fechaInicioContratoSQL = rs.getString("fecha_inicio_contrato");
-                LocalDate fechaInicioContrato = LocalDate.parse(fechaInicioContratoSQL);
-                String fechaInicioContratoFormateada = fechaInicioContrato.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-                String fechaFinContratoSQL = rs.getString("fecha_fin_contrato");
-                LocalDate fechaFinContrato = LocalDate.parse(fechaFinContratoSQL);
-                String fechaFinContratoFormateada = fechaFinContrato.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-                double precioMensual = rs.getDouble("precio_mensual");
-                int duracionMeses = rs.getInt("duracion_meses");
-                precioTotal = rs.getDouble("precio_total");
-                boolean premium = rs.getBoolean("premium");
-
-                //Rellenamos los campos de la interfaz de usuario con los datos obtenidos
-                jTextFieldFechaInicio.setText(fechaInicioContratoFormateada);
-                jTextFieldFechaFin.setText(fechaFinContratoFormateada);
-                jComboBoxPrecioMensual.setSelectedItem(String.valueOf(precioMensual));
-                jTextFieldMeses.setText(String.valueOf(duracionMeses));
-                jLabelPrecioTotal.setText(String.valueOf(precioTotal));
-                jCheckBox1.setSelected(premium);
-            } else {
-
-                JOptionPane.showMessageDialog(this, "No se encontraron abonos para este usuario", "Info", JOptionPane.INFORMATION_MESSAGE);
-                // Si no se encuentra un abono para el usuario, se pueden limpiar los campos
-                jTextFieldFechaInicio.setText("");
-                jTextFieldFechaFin.setText("");
-                jComboBoxPrecioMensual.setSelectedIndex(0);
-                jTextFieldMeses.setText("");
-                jLabelPrecioTotal.setText("");
-                jCheckBox1.setSelected(false);
-            }
-
-            // Cerramos los recursos de la base de datos
-            rs.close();
-            pstmt.close();
+            try ( // Preparamos la consulta
+                    PreparedStatement pstmt = conexion.prepareStatement(query)) {
+                pstmt.setString(1, dni); // Establecemos el DNI como parámetro en la consulta
+                // Verificamos si se encontraron resultados
+                try ( // Ejecutamos la consulta
+                        ResultSet rs = pstmt.executeQuery()) {
+                    // Verificamos si se encontraron resultados
+                    if (rs.next()) {
+                        // Mensaje de depuración para verificar si se encontraron resultados
+                        
+                        // Obtenemos los datos del abono de la consulta
+                        String fechaInicioContratoSQL = rs.getString("fecha_inicio_contrato");
+                        LocalDate fechaInicioContrato = LocalDate.parse(fechaInicioContratoSQL);
+                        String fechaInicioContratoFormateada = fechaInicioContrato.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        
+                        String fechaFinContratoSQL = rs.getString("fecha_fin_contrato");
+                        LocalDate fechaFinContrato = LocalDate.parse(fechaFinContratoSQL);
+                        String fechaFinContratoFormateada = fechaFinContrato.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        
+                        double precioMensual = rs.getDouble("precio_mensual");
+                        int duracionMeses = rs.getInt("duracion_meses");
+                        precioTotal = rs.getDouble("precio_total");
+                        boolean premium = rs.getBoolean("premium");
+                        
+                        //Rellenamos los campos de la interfaz de usuario con los datos obtenidos
+                        jTextFieldFechaInicio.setText(fechaInicioContratoFormateada);
+                        jTextFieldFechaFin.setText(fechaFinContratoFormateada);
+                        jComboBoxPrecioMensual.setSelectedItem(String.valueOf(precioMensual));
+                        jTextFieldMeses.setText(String.valueOf(duracionMeses));
+                        jLabelPrecioTotal.setText(String.valueOf(precioTotal));
+                        jCheckBox1.setSelected(premium);
+                    } else {
+                        
+                        JOptionPane.showMessageDialog(this, "No se encontraron abonos para este usuario", "Info", JOptionPane.INFORMATION_MESSAGE);
+                        // Si no se encuentra un abono para el usuario, se pueden limpiar los campos
+                        jTextFieldFechaInicio.setText("");
+                        jTextFieldFechaFin.setText("");
+                        jComboBoxPrecioMensual.setSelectedIndex(0);
+                        jTextFieldMeses.setText("");
+                        jLabelPrecioTotal.setText("");
+                        jCheckBox1.setSelected(false);
+                    }
+                }
+            } // Establecemos el DNI como parámetro en la consulta // Establecemos el DNI como parámetro en la consulta
         } catch (SQLException ex) {
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al obtener el abono de la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
   
+    /**
+     *
+     * @param dniUsuario
+     * @param fechaInicio
+     * @param fechaFin
+     * @param precioTotal
+     * @return
+     */
     public boolean actualizarAbonoEnBD(String dniUsuario, String fechaInicio, String fechaFin, double precioTotal) {
         //Con esto convertimos las fechas de inicio y fin al formato que espera MySQL (YYYY-MM-DD)
         DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -490,7 +534,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             return filasAfectadas > 0;
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -524,7 +567,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                     JOptionPane.showMessageDialog(this, "No se pudo modificar el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
-                ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error al modificar el usuario en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -556,7 +598,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                 JOptionPane.showMessageDialog(this, "No se pudo borrar el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al borrar el usuario de la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -581,11 +622,16 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                 JOptionPane.showMessageDialog(this, "No se pudo borrar el abono.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al borrar el abono de la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
+    /**
+     *
+     * @param nombre
+     * @param apellidos
+     * @param dni
+     */
     @Override
     public void onUsuarioSeleccionado(String nombre, String apellidos, String dni) {
         rellenarDatosUsuario(dni);
@@ -1251,7 +1297,10 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }//GEN-LAST:event_jButtonGuardarCambiosActionPerformed
 
- 
+    /**
+     *
+     * @param args
+     */
     public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -1259,10 +1308,8 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             java.util.logging.Logger.getLogger(GestionUsuarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GestionUsuarios().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new GestionUsuarios().setVisible(true);
         });
     }
 

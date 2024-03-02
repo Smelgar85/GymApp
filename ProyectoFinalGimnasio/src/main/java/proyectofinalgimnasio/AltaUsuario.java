@@ -7,8 +7,6 @@ package proyectofinalgimnasio;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,6 +30,10 @@ public class AltaUsuario extends javax.swing.JFrame {
         setTitle("Gimnasio - Altas");
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean verificarDatos() {
             String regexNombre = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
             String regexApellidos = "[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+";
@@ -118,7 +120,7 @@ public class AltaUsuario extends javax.swing.JFrame {
             String email = jTextFieldEmail.getText();
             String fechaNacimiento = jTextFieldFechaNacimiento.getText();
 
-            //Formatear la fecha al formato YYYY-MM-DD para que MySQL lo acepte
+            //Se formatear la fecha al formato YYYY-MM-DD para que MySQL lo acepte
             String[] partesFecha = fechaNacimiento.split("[-/]");
             String fechaFormateada = partesFecha[2] + "-" + partesFecha[1] + "-" + partesFecha[0];
 
@@ -146,8 +148,13 @@ public class AltaUsuario extends javax.swing.JFrame {
             }
         }
 
+    /**
+     *
+     * @param fecha
+     * @return
+     */
     public boolean verificarFecha(String fecha) {
-        //Verificar el formato de la fecha usando una expresión regular
+        //Se verifica el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
         if (!fecha.matches(regexFecha)) {
             return false;
@@ -173,6 +180,11 @@ public class AltaUsuario extends javax.swing.JFrame {
         return true;
     }
 
+    /**
+     *
+     * @param anio
+     * @return
+     */
     public boolean esAnioBisiesto(int anio) {
         return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
     }

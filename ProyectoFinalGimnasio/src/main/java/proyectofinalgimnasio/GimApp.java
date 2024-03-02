@@ -34,7 +34,7 @@ public class GimApp extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel) jTableVencimientos.getModel();
         modelo.setRowCount(0); // Limpiar la tabla antes de agregar nuevos datos
 
-        // Obtener la fecha actual
+        //Obtener la fecha actual
         LocalDate fechaActual = LocalDate.now();
 
         //Aquí se define el periodo máximo de contratos próximos a caducar que se mostrarán en la tabla
@@ -243,31 +243,32 @@ public class GimApp extends javax.swing.JFrame {
 
     private void jButtonNuevoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoUsuarioActionPerformed
         AltaUsuario nuevoFrame = new AltaUsuario();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation()); 
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose();
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
     private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
         GestionUsuarios nuevoFrame = new GestionUsuarios();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation()); 
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose();
     }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
     private void jButtonNuevoAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoAbonoActionPerformed
         AltaAbono nuevoFrame = new AltaAbono();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation());
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose();
     }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
 
     private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
     /**
      * @param args the command line arguments
+     * @throws javax.swing.UnsupportedLookAndFeelException
      */
 public static void main(String args[]) throws UnsupportedLookAndFeelException {
     /* Set the Windows look and feel */

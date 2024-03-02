@@ -20,10 +20,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-
+/**
+ *
+ * @author Sebastián Melgar Marín
+ */
 public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionadoListener {
     private String dniUsuarioSeleccionado;
     
+    /**
+     *
+     */
     public AltaAbono() {
         initComponents();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
@@ -72,12 +78,22 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         
     }
     
-        
+    /**
+     *
+     * @param nombre
+     * @param apellidos
+     * @param dni
+     */
     @Override
     public void onUsuarioSeleccionado(String nombre, String apellidos, String dni) {
         mostrarUsuarioSeleccionado(nombre, apellidos, dni);
     }
   
+    /**
+     *
+     * @param fecha
+     * @return
+     */
     public boolean verificarFecha(String fecha) {
         // Verificar el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
@@ -105,6 +121,9 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         return true;
     }
 
+    /**
+     *
+     */
     public void verificarFechaInicio() {
         String fechaInicioStr = jTextFieldFechaInicio.getText();
 
@@ -117,6 +136,9 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         calcularFechaFin(); // Llamar a calcularFechaFin después de verificar la fecha
     }
 
+    /**
+     *
+     */
     public void calcularFechaFin() {
         if (!jLabelVerificadorFechaInicio.getText().isEmpty()) {
             return;
@@ -147,6 +169,9 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
             jTextFieldFechaFin.setText(fechaFinStr);
         }
 
+    /**
+     *
+     */
     public void calcularPrecioTotal() {
         String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
         String descuento = (String) jComboBoxDescuento.getSelectedItem();
@@ -179,6 +204,9 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         }
     }
 
+    /**
+     *
+     */
     public void verificarDatos() {
         String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
         String descuento = (String) jComboBoxDescuento.getSelectedItem();
@@ -242,11 +270,21 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         }
     }
 
-
+    /**
+     *
+     * @param anio
+     * @return
+     */
     public boolean esAnioBisiesto(int anio) {
         return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
     }
     
+    /**
+     *
+     * @param nombre
+     * @param apellidos
+     * @param dni
+     */
     public void mostrarUsuarioSeleccionado(String nombre, String apellidos, String dni) {
         jTextFieldUsuario.setText(nombre + " " + apellidos);
 
@@ -292,12 +330,25 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         }
     }
 
-    
+    /**
+     *
+     * @param precioTotal
+     * @param duracionMeses
+     * @return
+     */
     public double calcularPrecioMensual(double precioTotal, int duracionMeses) {
         return precioTotal / duracionMeses;
     }
     
+    /**
+     *
+     */
     public class FechaFormato {
+
+        /**
+         *
+         * @param args
+         */
         public static void main(String[] args) {
             // Fecha en formato DD/MM/YYYY
             String fechaInicioStr = "01/03/2024";
@@ -314,6 +365,11 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         }
     }
     
+    /**
+     *
+     * @param dni
+     * @return
+     */
     public boolean existeAbonoParaUsuario(String dni) {
         String consulta = "SELECT COUNT(*) FROM abonos WHERE usuario_dni = ?";
 
@@ -626,10 +682,11 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
                                     .addComponent(jLabelUsuario)
                                     .addComponent(jTextFieldUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabelMeses)
-                                    .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabelVerificadorMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelVerificadorMeses, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabelMeses)
+                                        .addComponent(jTextFieldMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabelPrecioMensual)
@@ -737,7 +794,10 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
- 
+    /**
+     *
+     * @param args
+     */
     public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

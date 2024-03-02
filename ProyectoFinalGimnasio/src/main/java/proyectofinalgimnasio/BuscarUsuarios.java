@@ -5,7 +5,6 @@
 package proyectofinalgimnasio;
 
 import java.awt.Container;
-import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +22,9 @@ public class BuscarUsuarios extends javax.swing.JDialog {
     private String dniUsuarioSeleccionado;
     /**
      * Creates new form BuscarUsuarios
+     * @param parent
+     * @param modal
+     * @throws java.sql.SQLException
      */
     public BuscarUsuarios(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
@@ -30,6 +32,10 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         mostrarUltimosRegistros();
     }
 
+    /**
+     *
+     * @throws SQLException
+     */
     public void mostrarUltimosRegistros() throws SQLException {
             Connection conexion = ConexionBD.obtenerConexion();
 
@@ -37,17 +43,17 @@ public class BuscarUsuarios extends javax.swing.JDialog {
             String consulta = "SELECT nombre, apellidos, DNI, telefono, email "
                             + "FROM usuarios "
                             + "ORDER BY fecha_nacimiento DESC "
-                            + "LIMIT 10"; // Mostrar los últimos 4 registros
+                            + "LIMIT 10";
 
             try {
                 PreparedStatement ps = conexion.prepareStatement(consulta);
                 ResultSet rs = ps.executeQuery();
 
-                // Limpiar la tabla antes de agregar nuevos datos
+                //Limpiamos la tabla antes de agregar nuevos datos
                 DefaultTableModel modelo = (DefaultTableModel) jTableResultados.getModel();
                 modelo.setRowCount(0);
 
-                //Llenar la tabla con los resultados de la consulta
+                //Llenamos la tabla con los resultados de la consulta
                 while (rs.next()) {
                     Object[] fila = {
                         rs.getString("nombre"),
@@ -65,11 +71,17 @@ public class BuscarUsuarios extends javax.swing.JDialog {
             }
         }
          
+    /**
+     *
+     * @param criterio
+     * @param busqueda
+     * @throws SQLException
+     */
     public void buscarUsuarios(String criterio, String busqueda) throws SQLException {
-        //Obtener la conexión a la base de datos
+        //Obtenemos la conexión a la base de datos
         Connection conexion = ConexionBD.obtenerConexion();
 
-        //Consulta SQL para buscar usuarios según el criterio seleccionado
+        //Consultamos SQL para buscar usuarios según el criterio seleccionado
         String consulta = "SELECT nombre, apellidos, DNI, telefono, email "
                         + "FROM usuarios "
                         + "WHERE " + criterio + " LIKE ?";
@@ -79,11 +91,11 @@ public class BuscarUsuarios extends javax.swing.JDialog {
             ps.setString(1, "%" + busqueda + "%");
             ResultSet rs = ps.executeQuery();
 
-            //Limpiar la tabla antes de agregar nuevos datos
+            //Limpiamos la tabla antes de agregar nuevos datos
             DefaultTableModel modelo = (DefaultTableModel) jTableResultados.getModel();
             modelo.setRowCount(0);
 
-            //Llenar la tabla con los resultados de la búsqueda
+            //Llenamos la tabla con los resultados de la búsqueda
             while (rs.next()) {
                 Object[] fila = {
                     rs.getString("nombre"),
@@ -97,11 +109,14 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            // Cerrar la conexión
             ConexionBD.cerrarConexion(conexion);
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public String getDNIUsuarioSeleccionado() {
         return dniUsuarioSeleccionado; // Suponiendo que 'dniUsuarioSeleccionado' es el DNI del usuario seleccionado
     }
@@ -262,24 +277,20 @@ public class BuscarUsuarios extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonBuscarUltimasAltasActionPerformed
 
     private void jButtonSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSeleccionarActionPerformed
-    // Obtener la instancia del padre
+    //Obtener la instancia del padre
       Container parent = getParent();
       UsuarioSeleccionadoListener listener = null;
 
-      // Verificar si el padre implementa UsuarioSeleccionadoListener
-      if (parent instanceof UsuarioSeleccionadoListener) {
           listener = (UsuarioSeleccionadoListener) parent;
-      }
-
-      // Asegúrate de que hay una fila seleccionada
+      
       int filaSeleccionada = jTableResultados.getSelectedRow();
       if (filaSeleccionada != -1 && listener != null) {
-          // Obtener el nombre, apellidos y DNI del usuario seleccionado
-          String nombre = (String) jTableResultados.getValueAt(filaSeleccionada, 0); // Nombre en la primera columna
-          String apellidos = (String) jTableResultados.getValueAt(filaSeleccionada, 1); // Apellidos en la segunda columna
-          String dni = (String) jTableResultados.getValueAt(filaSeleccionada, 2); // DNI en la tercera columna
+          //Obtener el nombre, apellidos y DNI del usuario seleccionado
+          String nombre = (String) jTableResultados.getValueAt(filaSeleccionada, 0); 
+          String apellidos = (String) jTableResultados.getValueAt(filaSeleccionada, 1); 
+          String dni = (String) jTableResultados.getValueAt(filaSeleccionada, 2);
 
-          // Llamar al método correspondiente del listener para manejar la selección del usuario
+          //Llamar al método del listener para manejar la selección del usuario
           listener.onUsuarioSeleccionado(nombre, apellidos, dni);
       } 
       dispose();
