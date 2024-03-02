@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -25,6 +26,7 @@ public class AltaUsuario extends javax.swing.JFrame {
      */
     public AltaUsuario() {
         initComponents();
+        setTitle("Gimnasio - Altas");
         jButtonGuardarUsuario.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,7 +127,7 @@ public class AltaUsuario extends javax.swing.JFrame {
                 statement.setString(1, dni);
                 statement.setString(2, nombre);
                 statement.setString(3, apellidos);
-                statement.setString(4, fechaFormateada); // Utilizamos la fecha formateada
+                statement.setString(4, fechaFormateada); //Utilizamos la fecha formateada
                 statement.setString(5, telefono);
                 statement.setString(6, email);
 
@@ -147,7 +149,7 @@ public class AltaUsuario extends javax.swing.JFrame {
 
     //Método para verificar la fecha de nacimiento, comprobando si la fecha es válida tanto en formato como en lógica (12 meses, 28, 30 o 31 días, año bisiesto, etc)
     private boolean verificarFecha(String fecha) {
-        // Verificar el formato de la fecha usando una expresión regular
+        //Verificar el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
         if (!fecha.matches(regexFecha)) {
             return false;
@@ -214,6 +216,7 @@ public class AltaUsuario extends javax.swing.JFrame {
         jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
+        jButtonInicio = new javax.swing.JButton();
         jLabelTituloVentana = new javax.swing.JLabel();
         jLabelNombre = new javax.swing.JLabel();
         jLabelApellidos = new javax.swing.JLabel();
@@ -298,7 +301,7 @@ public class AltaUsuario extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                    .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -328,21 +331,28 @@ public class AltaUsuario extends javax.swing.JFrame {
         );
         jPanelHeaderLayout.setVerticalGroup(
             jPanelHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 62, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInicioActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelLogoLayout = new javax.swing.GroupLayout(jPanelLogo);
         jPanelLogo.setLayout(jPanelLogoLayout);
         jPanelLogoLayout.setHorizontalGroup(
             jPanelLogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButtonInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanelLogoLayout.setVerticalGroup(
             jPanelLogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButtonInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jLabelTituloVentana.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -549,11 +559,11 @@ public class AltaUsuario extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonNuevoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoUsuarioActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jButtonNuevoUsuarioActionPerformed
 
     private void jButtonAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAyudaActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jButtonAyudaActionPerformed
 
     private void jTextFieldNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldNombreActionPerformed
@@ -561,50 +571,59 @@ public class AltaUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldNombreActionPerformed
 
     private void jTextFieldApellidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldApellidosActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldApellidosActionPerformed
 
     private void jTextFieldEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEmailActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldEmailActionPerformed
 
     private void jTextFieldTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTelefonoActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldTelefonoActionPerformed
 
     private void jTextFieldFechaNacimientoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFechaNacimientoActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldFechaNacimientoActionPerformed
 
     private void jButtonGuardarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarUsuarioActionPerformed
         if (verificarDatos()) {
             guardarDatos();
-        } else {
-            System.out.println("La verificación de datos ha fallado.");
-        }
+            JOptionPane.showMessageDialog(this, "Usuario creado correctamente", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } 
     }//GEN-LAST:event_jButtonGuardarUsuarioActionPerformed
 
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
-        // TODO add your handling code here:
+        GimApp nuevoFrame = new GimApp();
+        nuevoFrame.setLocation(this.getLocation()); //Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); 
     }//GEN-LAST:event_jButtonCancelarActionPerformed
 
     private void jTextFieldDNIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDNIActionPerformed
-        // TODO add your handling code here:
+        //TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldDNIActionPerformed
 
     private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
         GestionUsuarios nuevoFrame = new GestionUsuarios();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation()); //Establece la ubicación del nuevo JFrame igual a la del actual
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose(); 
     }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
     private void jButtonNuevoAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoAbonoActionPerformed
         AltaAbono nuevoFrame = new AltaAbono();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation()); //Establece la ubicación del nuevo JFrame igual a la del actual
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose(); 
     }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
+
+    private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
+        GimApp nuevoFrame = new GimApp();
+        nuevoFrame.setLocation(this.getLocation()); //Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); 
+    }//GEN-LAST:event_jButtonInicioActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -612,6 +631,7 @@ public class AltaUsuario extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonGestionUsuarios;
     private javax.swing.JButton jButtonGuardarUsuario;
+    private javax.swing.JButton jButtonInicio;
     private javax.swing.JButton jButtonNuevoAbono;
     private javax.swing.JButton jButtonNuevoUsuario;
     private javax.swing.JLabel jLabelApellidos;

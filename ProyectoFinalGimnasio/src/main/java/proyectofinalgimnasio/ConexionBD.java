@@ -13,10 +13,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionBD {
-    private static final String URL = "jdbc:mysql://localhost:3306/gimnasio";
-    private static final String USUARIO = "root";
-    private static final String CONTRASENA = "root";
+    
+    //private static final String URL = "jdbc:mysql://localhost:3306/gimnasio";
+    //private static final String USUARIO = "root";
+    //private static final String CONTRASENA = "root";
 
+    private static final String URL = "jdbc:mysql://158.178.203.92:3306/gimnasio";
+    private static final String USUARIO = "klexos";
+    private static final String CONTRASENA = "RE1P+QPp";
+
+    
     public static Connection obtenerConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
     }

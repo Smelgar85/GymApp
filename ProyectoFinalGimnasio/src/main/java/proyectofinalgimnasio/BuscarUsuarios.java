@@ -4,6 +4,8 @@
  */
 package proyectofinalgimnasio;
 
+import java.awt.Container;
+import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,8 +27,6 @@ public class BuscarUsuarios extends javax.swing.JDialog {
     public BuscarUsuarios(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
-
-        //Llamar al método para mostrar los últimos registros al abrir la ventana
         mostrarUltimosRegistros();
     }
 
@@ -37,7 +37,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
             String consulta = "SELECT nombre, apellidos, DNI, telefono, email "
                             + "FROM usuarios "
                             + "ORDER BY fecha_nacimiento DESC "
-                            + "LIMIT 4"; // Mostrar los últimos 4 registros
+                            + "LIMIT 10"; // Mostrar los últimos 4 registros
 
             try {
                 PreparedStatement ps = conexion.prepareStatement(consulta);
@@ -102,6 +102,10 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         }
     }
     
+    public String getDNIUsuarioSeleccionado() {
+        return dniUsuarioSeleccionado; // Suponiendo que 'dniUsuarioSeleccionado' es el DNI del usuario seleccionado
+    }
+    
     private void jTableResultadosMouseClicked(java.awt.event.MouseEvent evt) {                                              
         int filaSeleccionada = jTableResultados.getSelectedRow();
         if (filaSeleccionada != -1) {
@@ -127,7 +131,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         jButtonBuscar = new javax.swing.JButton();
         jButtonBuscarUltimasAltas = new javax.swing.JButton();
         jLabelEtiquetaBusqueda = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        jButtonSeleccionar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -178,10 +182,10 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         jLabelEtiquetaBusqueda.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabelEtiquetaBusqueda.setText("ULTIMAS ALTAS:");
 
-        jButton1.setText("SELECCIONAR");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSeleccionar.setText("SELECCIONAR");
+        jButtonSeleccionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonSeleccionarActionPerformed(evt);
             }
         });
 
@@ -208,7 +212,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButtonBuscarUltimasAltas))
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(39, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -232,7 +236,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(jButtonSeleccionar)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -257,23 +261,29 @@ public class BuscarUsuarios extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButtonBuscarUltimasAltasActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    // Obtener la instancia de AltaAbono
-    AltaAbono altaAbono = (AltaAbono) getParent();
+    private void jButtonSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSeleccionarActionPerformed
+    // Obtener la instancia del padre
+      Container parent = getParent();
+      UsuarioSeleccionadoListener listener = null;
 
-    // Asegúrate de que hay una fila seleccionada
-    int filaSeleccionada = jTableResultados.getSelectedRow();
-    if (filaSeleccionada != -1) {
-        // Obtener el nombre, apellidos y DNI del usuario seleccionado
-        String nombre = (String) jTableResultados.getValueAt(filaSeleccionada, 0); // Nombre en la primera columna
-        String apellidos = (String) jTableResultados.getValueAt(filaSeleccionada, 1); // Apellidos en la segunda columna
-        String dni = (String) jTableResultados.getValueAt(filaSeleccionada, 2); // DNI en la tercera columna
+      // Verificar si el padre implementa UsuarioSeleccionadoListener
+      if (parent instanceof UsuarioSeleccionadoListener) {
+          listener = (UsuarioSeleccionadoListener) parent;
+      }
 
-        // Llamar al método de AltaAbono para mostrar el usuario seleccionado
-        altaAbono.mostrarUsuarioSeleccionado(nombre, apellidos, dni);
-    } 
-    dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+      // Asegúrate de que hay una fila seleccionada
+      int filaSeleccionada = jTableResultados.getSelectedRow();
+      if (filaSeleccionada != -1 && listener != null) {
+          // Obtener el nombre, apellidos y DNI del usuario seleccionado
+          String nombre = (String) jTableResultados.getValueAt(filaSeleccionada, 0); // Nombre en la primera columna
+          String apellidos = (String) jTableResultados.getValueAt(filaSeleccionada, 1); // Apellidos en la segunda columna
+          String dni = (String) jTableResultados.getValueAt(filaSeleccionada, 2); // DNI en la tercera columna
+
+          // Llamar al método correspondiente del listener para manejar la selección del usuario
+          listener.onUsuarioSeleccionado(nombre, apellidos, dni);
+      } 
+      dispose();
+    }//GEN-LAST:event_jButtonSeleccionarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -323,9 +333,9 @@ public class BuscarUsuarios extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonBuscar;
     private javax.swing.JButton jButtonBuscarUltimasAltas;
+    private javax.swing.JButton jButtonSeleccionar;
     private javax.swing.JComboBox<String> jComboBoxCriterioBusqueda;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCriterio;

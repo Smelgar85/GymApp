@@ -23,7 +23,7 @@ public class GimApp extends javax.swing.JFrame {
      */
     public GimApp() {
         initComponents();
-        
+        setTitle("Gimnasio - Ventana principal");
         // Llamar al método para obtener y mostrar los abonos próximos a caducar al iniciar la aplicación
         obtenerAbonosProximosCaducar();
     }
@@ -86,6 +86,7 @@ public class GimApp extends javax.swing.JFrame {
         jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
+        jButtonInicio = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableVencimientos = new javax.swing.JTable();
         jLabelTituloVentana = new javax.swing.JLabel();
@@ -152,7 +153,7 @@ public class GimApp extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                    .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -182,21 +183,28 @@ public class GimApp extends javax.swing.JFrame {
         );
         jPanelHeaderLayout.setVerticalGroup(
             jPanelHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 62, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInicioActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelLogoLayout = new javax.swing.GroupLayout(jPanelLogo);
         jPanelLogo.setLayout(jPanelLogoLayout);
         jPanelLogoLayout.setHorizontalGroup(
             jPanelLogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButtonInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanelLogoLayout.setVerticalGroup(
             jPanelLogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButtonInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jTableVencimientos.setModel(new javax.swing.table.DefaultTableModel(
@@ -287,6 +295,10 @@ public class GimApp extends javax.swing.JFrame {
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
 
+    private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonInicioActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -309,6 +321,7 @@ public static void main(String args[]) throws UnsupportedLookAndFeelException {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAyuda;
     private javax.swing.JButton jButtonGestionUsuarios;
+    private javax.swing.JButton jButtonInicio;
     private javax.swing.JButton jButtonNuevoAbono;
     private javax.swing.JButton jButtonNuevoUsuario;
     private javax.swing.JLabel jLabelTituloVentana;

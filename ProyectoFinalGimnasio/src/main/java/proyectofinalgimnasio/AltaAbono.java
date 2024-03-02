@@ -18,11 +18,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class AltaAbono extends javax.swing.JFrame {
+public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionadoListener {
     private String dniUsuarioSeleccionado;
     
     public AltaAbono() {
         initComponents();
+        setTitle("Gimnasio - Abonos");
         jButtonGuardarAbono.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -64,6 +65,12 @@ public class AltaAbono extends javax.swing.JFrame {
                 verificarFechaInicio();
             }
         });
+        
+    }
+    
+    @Override
+    public void onUsuarioSeleccionado(String nombre, String apellidos, String dni) {
+        mostrarUsuarioSeleccionado(nombre, apellidos, dni);
     }
   
     private boolean verificarFecha(String fecha) {
@@ -312,6 +319,7 @@ public class AltaAbono extends javax.swing.JFrame {
         jButtonAyuda = new javax.swing.JButton();
         jPanelHeader = new javax.swing.JPanel();
         jPanelLogo = new javax.swing.JPanel();
+        jButtonInicio = new javax.swing.JButton();
         jLabelTituloVentana = new javax.swing.JLabel();
         jLabelUsuario = new javax.swing.JLabel();
         jLabelMeses = new javax.swing.JLabel();
@@ -396,7 +404,7 @@ public class AltaAbono extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLateralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                    .addComponent(jButtonNuevoAbono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonGestionUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonNuevoUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -426,21 +434,28 @@ public class AltaAbono extends javax.swing.JFrame {
         );
         jPanelHeaderLayout.setVerticalGroup(
             jPanelHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 62, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInicioActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelLogoLayout = new javax.swing.GroupLayout(jPanelLogo);
         jPanelLogo.setLayout(jPanelLogoLayout);
         jPanelLogoLayout.setHorizontalGroup(
             jPanelLogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButtonInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanelLogoLayout.setVerticalGroup(
             jPanelLogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButtonInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jLabelTituloVentana.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -513,7 +528,7 @@ public class AltaAbono extends javax.swing.JFrame {
         });
 
         jButtonGuardarAbono.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButtonGuardarAbono.setText("ACEPTAR NUEVO ABONO");
+        jButtonGuardarAbono.setText("CONFIRMAR NUEVO ABONO");
         jButtonGuardarAbono.setToolTipText("");
         jButtonGuardarAbono.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -590,12 +605,12 @@ public class AltaAbono extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButtonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabelPrecioTotal)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel1)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jButtonGuardarAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
@@ -681,7 +696,10 @@ public class AltaAbono extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonGuardarAbonoActionPerformed
 
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
-        // TODO add your handling code here:
+        GimApp nuevoFrame = new GimApp();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonCancelarActionPerformed
 
     private void jTextFieldFechaFinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFechaFinActionPerformed
@@ -718,6 +736,13 @@ public class AltaAbono extends javax.swing.JFrame {
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
+    private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
+        GimApp nuevoFrame = new GimApp();
+        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setVisible(true);
+        this.dispose(); // Cierra el JFrame actual
+    }//GEN-LAST:event_jButtonInicioActionPerformed
+
  
     public static void main(String args[]) {
         try {
@@ -741,6 +766,7 @@ public class AltaAbono extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonGestionUsuarios;
     private javax.swing.JButton jButtonGuardarAbono;
+    private javax.swing.JButton jButtonInicio;
     private javax.swing.JButton jButtonNuevoAbono;
     private javax.swing.JButton jButtonNuevoUsuario;
     private javax.swing.JCheckBox jCheckBox1;
