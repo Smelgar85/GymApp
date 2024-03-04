@@ -1,11 +1,7 @@
 
 package proyectofinalgimnasio;
 
-import java.awt.Toolkit;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.sql.Connection;
@@ -72,7 +68,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
      */
     public GestionUsuarios() {
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
+        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Gestión");
         jButtonRenovarAbono.addActionListener((ActionEvent e) -> {
             verificarDatosAbono();
@@ -395,6 +391,10 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
 }
    
     private void rellenarDatosUsuario(String dni) {
+        if (dni == null || dni.isEmpty()) {
+        // No se seleccionó ningún usuario, no hagas nada
+        return;
+        }
         try {
             // Define la consulta SQL para obtener los datos del usuario
             try ( // Realiza la conexión a la base de datos
@@ -440,8 +440,13 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             JOptionPane.showMessageDialog(this, "Error al consultar la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     private void rellenarDatosAbono(String dni) {
+        if (dni == null || dni.isEmpty()) {
+        // No se seleccionó ningún usuario, no hagas nada
+        return;
+        }
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             // Definimos la consulta SQL para obtener el abono del usuario
             String query = "SELECT * FROM abonos WHERE usuario_dni = ?";
@@ -574,33 +579,50 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     
     private void borrarUsuarioEnBD(String dni) {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
-            // Primero, borramos el registro correspondiente al usuario en la tabla 'abonos'
+            // Borramos el registro correspondiente al usuario en la tabla 'abonos'
             String queryAbonos = "DELETE FROM abonos WHERE usuario_dni = ?";
             PreparedStatement pstmtAbonos = conexion.prepareStatement(queryAbonos);
             pstmtAbonos.setString(1, dni);
-            pstmtAbonos.executeUpdate();
+            int filasAbonosAfectadas = pstmtAbonos.executeUpdate();
 
-            // Luego, borramos el registro del usuario en la tabla 'usuarios'
+            // Borramos el registro del usuario en la tabla 'usuarios'
             String queryUsuarios = "DELETE FROM usuarios WHERE DNI = ?";
             PreparedStatement pstmtUsuarios = conexion.prepareStatement(queryUsuarios);
             pstmtUsuarios.setString(1, dni);
-            int filasAfectadas = pstmtUsuarios.executeUpdate();
+            int filasUsuariosAfectadas = pstmtUsuarios.executeUpdate();
 
-            if (filasAfectadas > 0) {
-                JOptionPane.showMessageDialog(this, "Usuario y abono asociado borrados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            if (filasAbonosAfectadas > 0 || filasUsuariosAfectadas > 0) {
+                // Al menos una de las eliminaciones se realizó correctamente
+                JOptionPane.showMessageDialog(this, "Usuario borrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 // Limpiar los campos de la interfaz de usuario
                 jTextFieldNombre.setText("");
                 jTextFieldApellidos.setText("");
                 jTextFieldEmail.setText("");
                 jTextFieldTelefono.setText("");
                 jTextFieldFechaNacimiento.setText("");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo borrar el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            } 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al borrar el usuario de la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private boolean camposUsuarioVacios() {
+        return jTextFieldNombre.getText().isEmpty() &&
+               jTextFieldApellidos.getText().isEmpty() &&
+               jTextFieldEmail.getText().isEmpty() &&
+               jTextFieldTelefono.getText().isEmpty() &&
+               jTextFieldFechaNacimiento.getText().isEmpty();
+    }
+    
+    private boolean camposAbonoVacios() {
+        return jTextFieldFechaInicio.getText().isEmpty() &&
+               jTextFieldFechaFin.getText().isEmpty() &&
+               jTextFieldMeses.getText().isEmpty() &&
+               jComboBoxDescuento.getSelectedIndex() == 0 &&
+               jComboBoxPrecioMensual.getSelectedIndex() == 0 &&
+               !jCheckBox1.isSelected();
+    }
+
     
     private void borrarAbonoEnBD(String dni) {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
@@ -765,7 +787,9 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.setBackground(new java.awt.Color(255, 102, 102));
+        jButtonInicio.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/LogoGymApp.png"))); // NOI18N
         jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonInicioActionPerformed(evt);
@@ -1216,13 +1240,13 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
               Logger.getLogger(GestionUsuarios.class.getName()).log(Level.SEVERE, null, ex);
           }
 
-          // Mostrar el diálogo de búsqueda de usuarios
+          //Mostrar el diálogo de búsqueda de usuarios
           dialogoBuscarUsuarios.setVisible(true);
 
-          // Obtener el DNI del usuario seleccionado
+          //Obtener el DNI del usuario seleccionado
           String dniUsuarioSeleccionado = dialogoBuscarUsuarios.getDNIUsuarioSeleccionado();
 
-          // Rellenar los datos del usuario en la interfaz de usuario utilizando el DNI obtenido
+          //Rellenar los datos del usuario en la interfaz de usuario utilizando el DNI obtenido
           rellenarDatosUsuario(dniUsuarioSeleccionado);
           rellenarDatosAbono(jTextFieldDNI.getText());
     }//GEN-LAST:event_jButtonBuscarUsuarioActionPerformed
@@ -1249,11 +1273,16 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
     private void jButtonEliminarAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarAbonoActionPerformed
-    int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas eliminar el abono para este usuario?", "Confirmar eliminación de abono", JOptionPane.YES_NO_OPTION);
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            borrarAbonoEnBD(jTextFieldDNI.getText());
-            JOptionPane.showMessageDialog(this, "Abono borrado con éxito", "Info", JOptionPane.INFORMATION_MESSAGE);
-    }
+    if (camposAbonoVacios()) {
+          JOptionPane.showMessageDialog(this, "No hay ningún abono asociado a este usuario.", "Info", JOptionPane.INFORMATION_MESSAGE);
+          return;
+      }
+
+      int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas borrar el abono de este usuario?", "Confirmar borrado de abono", JOptionPane.YES_NO_OPTION);
+      if (opcion == JOptionPane.YES_OPTION) {
+          String dni = jTextFieldDNI.getText();
+          borrarAbonoEnBD(dni);
+      }
     }//GEN-LAST:event_jButtonEliminarAbonoActionPerformed
 
     private void jTextFieldApellidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldApellidosActionPerformed
@@ -1281,12 +1310,16 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     }//GEN-LAST:event_jTextFieldTelefonoActionPerformed
 
     private void jButtonEliminarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarUsuarioActionPerformed
-        int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas borrar este usuario y su abono asociado?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
-        if (opcion == JOptionPane.YES_OPTION) {
-            String dni = jTextFieldDNI.getText();
-            borrarUsuarioEnBD(dni);
-            JOptionPane.showMessageDialog(this, "Usuario y abono eliminados correctamente", "Info", JOptionPane.INFORMATION_MESSAGE);
-    }
+    if (camposUsuarioVacios()) {
+           JOptionPane.showMessageDialog(this, "Selecciona un usuario primero.", "Info", JOptionPane.INFORMATION_MESSAGE);
+           return;
+       }
+
+       int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas borrar este usuario? Si tiene abono, se borrará también", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+       if (opcion == JOptionPane.YES_OPTION) {
+           String dni = jTextFieldDNI.getText();
+           borrarUsuarioEnBD(dni);
+       }
     }//GEN-LAST:event_jButtonEliminarUsuarioActionPerformed
 
     private void jButtonGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarCambiosActionPerformed
@@ -1297,21 +1330,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         }
     }//GEN-LAST:event_jButtonGuardarCambiosActionPerformed
 
-    /**
-     *
-     * @param args
-     */
-    public static void main(String args[]) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GestionUsuarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
 
-        java.awt.EventQueue.invokeLater(() -> {
-            new GestionUsuarios().setVisible(true);
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBuscarUsuario;

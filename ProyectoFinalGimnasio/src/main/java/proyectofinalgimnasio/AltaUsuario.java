@@ -26,7 +26,7 @@ public class AltaUsuario extends javax.swing.JFrame {
      */
     public AltaUsuario() {
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
+        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Altas");
     }
     
@@ -211,26 +211,7 @@ public class AltaUsuario extends javax.swing.JFrame {
         return false;
     }
 
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-           /* Set the Windows look and feel */
-           try {
-               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-           } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-               java.util.logging.Logger.getLogger(AltaUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-           }
-
-           /* Create and display the form */
-           java.awt.EventQueue.invokeLater(new Runnable() {
-               public void run() {
-                   new AltaUsuario().setVisible(true);
-               }
-           });
-   }
-    
+   
       /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -338,7 +319,9 @@ public class AltaUsuario extends javax.swing.JFrame {
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.setBackground(new java.awt.Color(255, 102, 102));
+        jButtonInicio.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/LogoGymApp.png"))); // NOI18N
         jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonInicioActionPerformed(evt);

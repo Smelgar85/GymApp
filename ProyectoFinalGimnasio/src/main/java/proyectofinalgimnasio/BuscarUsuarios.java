@@ -43,7 +43,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
             String consulta = "SELECT nombre, apellidos, DNI, telefono, email "
                             + "FROM usuarios "
                             + "ORDER BY fecha_nacimiento DESC "
-                            + "LIMIT 10";
+                            + "LIMIT 18";
 
             try {
                 PreparedStatement ps = conexion.prepareStatement(consulta);
@@ -78,7 +78,6 @@ public class BuscarUsuarios extends javax.swing.JDialog {
      * @throws SQLException
      */
     public void buscarUsuarios(String criterio, String busqueda) throws SQLException {
-        //Obtenemos la conexión a la base de datos
         Connection conexion = ConexionBD.obtenerConexion();
 
         //Consultamos SQL para buscar usuarios según el criterio seleccionado

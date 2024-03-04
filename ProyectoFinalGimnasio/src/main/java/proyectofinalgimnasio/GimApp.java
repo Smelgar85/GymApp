@@ -25,7 +25,7 @@ public class GimApp extends javax.swing.JFrame {
      */
     public GimApp() {
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
+        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Ventana principal");
         obtenerAbonosProximosCaducar();
     }
@@ -160,7 +160,9 @@ public class GimApp extends javax.swing.JFrame {
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.setBackground(new java.awt.Color(255, 102, 102));
+        jButtonInicio.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/LogoGymApp.png"))); // NOI18N
         jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonInicioActionPerformed(evt);

@@ -32,7 +32,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
      */
     public AltaAbono() {
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
+        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
         setTitle("Gimnasio - Abonos");
         jButtonGuardarAbono.addActionListener(new ActionListener() {
             @Override
@@ -427,7 +427,6 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         jCheckBox1 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setPreferredSize(null);
         setResizable(false);
 
         jPanelLateral.setBackground(new java.awt.Color(255, 102, 102));
@@ -496,7 +495,9 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
         jPanelLogo.setBackground(new java.awt.Color(255, 102, 102));
         jPanelLogo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/LogoGymApp.png"))); // NOI18N
+        jButtonInicio.setBackground(new java.awt.Color(255, 102, 102));
+        jButtonInicio.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jButtonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/LogoGymApp.png"))); // NOI18N
         jButtonInicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonInicioActionPerformed(evt);
@@ -789,28 +790,11 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
 
     private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
         GimApp nuevoFrame = new GimApp();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation());
         nuevoFrame.setVisible(true);
         this.dispose(); // Cierra el JFrame actual
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
-    /**
-     *
-     * @param args
-     */
-    public static void main(String args[]) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AltaAbono.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AltaAbono().setVisible(true);
-            }
-        });
-    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
