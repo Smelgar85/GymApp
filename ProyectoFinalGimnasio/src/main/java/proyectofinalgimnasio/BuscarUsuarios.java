@@ -276,7 +276,7 @@ public class BuscarUsuarios extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonBuscarUltimasAltasActionPerformed
 
     private void jButtonSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSeleccionarActionPerformed
-    //Obtener la instancia del padre
+    //Obtenemos la instancia del padre
       Container parent = getParent();
       UsuarioSeleccionadoListener listener = null;
 
@@ -284,12 +284,12 @@ public class BuscarUsuarios extends javax.swing.JDialog {
       
       int filaSeleccionada = jTableResultados.getSelectedRow();
       if (filaSeleccionada != -1 && listener != null) {
-          //Obtener el nombre, apellidos y DNI del usuario seleccionado
+          //Obtenemos el nombre, apellidos y DNI del usuario seleccionado
           String nombre = (String) jTableResultados.getValueAt(filaSeleccionada, 0); 
           String apellidos = (String) jTableResultados.getValueAt(filaSeleccionada, 1); 
           String dni = (String) jTableResultados.getValueAt(filaSeleccionada, 2);
 
-          //Llamar al método del listener para manejar la selección del usuario
+          //Llamamos al método del listener para manejar la selección del usuario
           listener.onUsuarioSeleccionado(nombre, apellidos, dni);
       } 
       dispose();

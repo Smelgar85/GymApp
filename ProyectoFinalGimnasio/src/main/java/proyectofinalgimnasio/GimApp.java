@@ -64,7 +64,6 @@ public class GimApp extends javax.swing.JFrame {
                 }
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al conectar con la base de datos: " + ex.getMessage(), "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }

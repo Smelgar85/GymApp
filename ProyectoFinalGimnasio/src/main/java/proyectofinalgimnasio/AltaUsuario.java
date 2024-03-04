@@ -5,8 +5,6 @@
 package proyectofinalgimnasio;
 
 import java.awt.Toolkit;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -144,7 +142,6 @@ public class AltaUsuario extends javax.swing.JFrame {
                     System.out.println("Los datos se han insertado correctamente en la base de datos.");
                 }
             } catch (SQLException ex) {
-                ex.printStackTrace();
             }
         }
 
@@ -205,7 +202,6 @@ public class AltaUsuario extends javax.swing.JFrame {
             statement.close();
             conexion.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
         }
 
         return false;

@@ -2,8 +2,6 @@
 package proyectofinalgimnasio;
 
 import java.awt.Toolkit;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -95,7 +93,7 @@ public class AltaAbono extends javax.swing.JFrame implements UsuarioSeleccionado
      * @return
      */
     public boolean verificarFecha(String fecha) {
-        // Verificar el formato de la fecha usando una expresión regular
+        //Verificamos el formato de la fecha usando una expresión regular
         String regexFecha = "(0[1-9]|[12]\\d|3[01])[-/](0[1-9]|1[0-2])[-/]\\d{4}";
         if (!fecha.matches(regexFecha)) {
             return false;

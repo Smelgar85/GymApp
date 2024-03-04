@@ -1,6 +1,7 @@
 
 package proyectofinalgimnasio;
 
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -68,7 +69,8 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
      */
     public GestionUsuarios() {
         initComponents();
-        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png")));
+        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icono.png"))); //Comento esta linea porque netbeans maneja GENIAL las dependencias de imagenes.
+        //Deberían darle un premio al responsable. En la cara. Con un ladrillo.
         setTitle("Gimnasio - Gestión");
         jButtonRenovarAbono.addActionListener((ActionEvent e) -> {
             verificarDatosAbono();
@@ -100,13 +102,24 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             }
         });
     }
-    
     private void verificarDatosAbono() {
         String precioMensual = (String) jComboBoxPrecioMensual.getSelectedItem();
         String descuento = (String) jComboBoxDescuento.getSelectedItem();
         String numeroMeses = jTextFieldMeses.getText();
         String fechaInicio = jTextFieldFechaInicio.getText();
         boolean camposCorrectos = true;
+
+        // Validar si hay un usuario seleccionado
+        if (jTextFieldDNI.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario antes de renovar el abono.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validar campos de precio mensual y descuento no vacíos
+        if (precioMensual.isEmpty() || descuento.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un precio mensual y un descuento válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         Pattern pattern = Pattern.compile("^(?:[1-9]|1[0-2])$");
         Matcher matcher = pattern.matcher(numeroMeses);
@@ -145,7 +158,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         total *= (1 - descuentoDouble / 100);
 
         jLabelPrecioTotal.setText("Precio total: " + String.format("%.2f", total) + "€");
-        
+
         if (camposCorrectos) {
             String fechaFin = jTextFieldFechaFin.getText();
             if (actualizarAbonoEnBD(jTextFieldDNI.getText(), fechaInicio, fechaFin, total)) {
@@ -155,7 +168,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
             }
         }
     }
-    
+
     /**
      *
      * @return
@@ -391,39 +404,36 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
 }
    
     private void rellenarDatosUsuario(String dni) {
+        //Si no se selecciona nada, no se hace nada
         if (dni == null || dni.isEmpty()) {
-        // No se seleccionó ningún usuario, no hagas nada
         return;
         }
         try {
-            // Define la consulta SQL para obtener los datos del usuario
-            try ( // Realiza la conexión a la base de datos
-                    Connection conexion = ConexionBD.obtenerConexion()) {
-                // Define la consulta SQL para obtener los datos del usuario
+            //Aquí hacemos la conexión a la base de datos
+            try (
+                Connection conexion = ConexionBD.obtenerConexion()) {
                 String query = "SELECT * FROM usuarios WHERE DNI = ?";
                 
-                // Establece el DNI como parámetro en la consulta
-                try ( // Prepara la consulta
-                        PreparedStatement pstmt = conexion.prepareStatement(query)) {
-                    // Establece el DNI como parámetro en la consulta
+                //Se establece el DNI como parámetro en la consulta
+                try (
+                    PreparedStatement pstmt = conexion.prepareStatement(query)) {
                     pstmt.setString(1, dni);
                     
-                    // Verifica si se encontraron resultados
-                    try ( // Ejecuta la consulta
+                    //Verifica si se encontraron resultados
+                    try (
                             ResultSet rs = pstmt.executeQuery()) {
-                        // Verifica si se encontraron resultados
                         if (rs.next()) {
-                            // Obtiene los datos del usuario de la consulta
+                            //Se obtienen los datos del usuario de la consulta
                             String nombre = rs.getString("nombre");
                             String apellidos = rs.getString("apellidos");
-                            // Convertir la fecha de nacimiento al formato dd/mm/yyyy
+                            //Pasamos la fecha de nacimiento al formato dd/mm/yyyy
                             String fechaNacimientoSQL = rs.getString("fecha_nacimiento");
                             LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoSQL);
                             String fechaNacimientoFormateada = fechaNacimiento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                             String telefono = rs.getString("telefono");
                             String email = rs.getString("email");
                             
-                            // Rellena los campos de la interfaz de usuario con los datos obtenidos
+                            //Rellenamos los campos de la interfaz de usuario con los datos obtenidos
                             jTextFieldDNI.setText(dni);
                             jTextFieldNombre.setText(nombre);
                             jTextFieldApellidos.setText(apellidos);
@@ -431,37 +441,30 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                             jTextFieldTelefono.setText(telefono);
                             jTextFieldEmail.setText(email);
                         }
-                        // Cierra los recursos de la base de datos
                     }
                 }
             }
         } catch (SQLException ex) {
-            // Si ocurre algún error durante la consulta, muestra un mensaje de error
+            //Si ocurre algún error durante la consulta muestra un mensaje de error
             JOptionPane.showMessageDialog(this, "Error al consultar la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
-
     private void rellenarDatosAbono(String dni) {
         if (dni == null || dni.isEmpty()) {
-        // No se seleccionó ningún usuario, no hagas nada
         return;
         }
         try (Connection conexion = ConexionBD.obtenerConexion()) {
-            // Definimos la consulta SQL para obtener el abono del usuario
             String query = "SELECT * FROM abonos WHERE usuario_dni = ?";
 
-            try ( // Preparamos la consulta
-                    PreparedStatement pstmt = conexion.prepareStatement(query)) {
-                pstmt.setString(1, dni); // Establecemos el DNI como parámetro en la consulta
-                // Verificamos si se encontraron resultados
-                try ( // Ejecutamos la consulta
+            try (
+                PreparedStatement pstmt = conexion.prepareStatement(query)) {
+                pstmt.setString(1, dni);
+                try (
                         ResultSet rs = pstmt.executeQuery()) {
-                    // Verificamos si se encontraron resultados
                     if (rs.next()) {
-                        // Mensaje de depuración para verificar si se encontraron resultados
                         
-                        // Obtenemos los datos del abono de la consulta
+                        //Obtenemos los datos del abono de la consulta
                         String fechaInicioContratoSQL = rs.getString("fecha_inicio_contrato");
                         LocalDate fechaInicioContrato = LocalDate.parse(fechaInicioContratoSQL);
                         String fechaInicioContratoFormateada = fechaInicioContrato.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
@@ -485,7 +488,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                     } else {
                         
                         JOptionPane.showMessageDialog(this, "No se encontraron abonos para este usuario", "Info", JOptionPane.INFORMATION_MESSAGE);
-                        // Si no se encuentra un abono para el usuario, se pueden limpiar los campos
+                        //Si no se encuentra un abono para el usuario, se limpian los campos
                         jTextFieldFechaInicio.setText("");
                         jTextFieldFechaFin.setText("");
                         jComboBoxPrecioMensual.setSelectedIndex(0);
@@ -494,7 +497,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
                         jCheckBox1.setSelected(false);
                     }
                 }
-            } // Establecemos el DNI como parámetro en la consulta // Establecemos el DNI como parámetro en la consulta
+            } //Establecemos el DNI como parámetro en la consulta
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al obtener el abono de la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -519,7 +522,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         LocalDate fechaFinLocalDate = LocalDate.parse(fechaFin, formatterEntrada);
         String fechaFinFormatoSQL = fechaFinLocalDate.format(formatterSalida);
 
-        //Aquí preparamos la consulta SQL para actualizar, no para insertar
+        //Aquí preparamos la consulta SQL para actualizar
         String updateQuery = "UPDATE abonos SET fecha_inicio_contrato = ?, fecha_fin_contrato = ?, precio_total = ?, duracion_meses = ?, precio_mensual = ?, premium = ? WHERE usuario_dni = ?";
         int duracionMeses = Integer.parseInt(jTextFieldMeses.getText());
 
@@ -548,7 +551,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
         String apellidos = datosUsuario[1];
         String email = datosUsuario[2];
         String telefono = datosUsuario[3];
-        // Convertir la fecha de nacimiento al formato yyyy-mm-dd
         String fechaNacimientoFormateada = datosUsuario[4];
         LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoFormateada, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         String fechaNacimientoSQL = fechaNacimiento.format(DateTimeFormatter.ISO_DATE);
@@ -579,20 +581,20 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     
     private void borrarUsuarioEnBD(String dni) {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
-            // Borramos el registro correspondiente al usuario en la tabla 'abonos'
+            //Borramos el registro correspondiente al usuario en la tabla 'abonos'
             String queryAbonos = "DELETE FROM abonos WHERE usuario_dni = ?";
             PreparedStatement pstmtAbonos = conexion.prepareStatement(queryAbonos);
             pstmtAbonos.setString(1, dni);
             int filasAbonosAfectadas = pstmtAbonos.executeUpdate();
 
-            // Borramos el registro del usuario en la tabla 'usuarios'
+            //Borramos el registro del usuario en la tabla 'usuarios'
             String queryUsuarios = "DELETE FROM usuarios WHERE DNI = ?";
             PreparedStatement pstmtUsuarios = conexion.prepareStatement(queryUsuarios);
             pstmtUsuarios.setString(1, dni);
             int filasUsuariosAfectadas = pstmtUsuarios.executeUpdate();
 
             if (filasAbonosAfectadas > 0 || filasUsuariosAfectadas > 0) {
-                // Al menos una de las eliminaciones se realizó correctamente
+                //Si se borra correctamente se informa con un mensajillo
                 JOptionPane.showMessageDialog(this, "Usuario borrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 // Limpiar los campos de la interfaz de usuario
                 jTextFieldNombre.setText("");
@@ -633,7 +635,7 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
 
             if (filasAfectadas > 0) {
                 JOptionPane.showMessageDialog(this, "Abono borrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                // Limpiar los campos de la interfaz de usuario
+                //Limpiamos los campos una vez borrado correctametne
                 jTextFieldFechaInicio.setText("");
                 jTextFieldFechaFin.setText("");
                 jTextFieldMeses.setText("");
@@ -658,7 +660,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     public void onUsuarioSeleccionado(String nombre, String apellidos, String dni) {
         rellenarDatosUsuario(dni);
     }
-
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -1207,10 +1208,8 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
     }//GEN-LAST:event_jTextFieldFechaInicioActionPerformed
 
     private void jButtonRenovarAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRenovarAbonoActionPerformed
-    int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas modificar el abono para este usuario?", "Confirmar modificación de abono", JOptionPane.YES_NO_OPTION);
-        if (confirmacion == JOptionPane.YES_OPTION) {
         verificarDatosAbono();
-        }
+    
     }//GEN-LAST:event_jButtonRenovarAbonoActionPerformed
 
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
@@ -1243,33 +1242,33 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
           //Mostrar el diálogo de búsqueda de usuarios
           dialogoBuscarUsuarios.setVisible(true);
 
-          //Obtener el DNI del usuario seleccionado
+          //Obtenemos el DNI del usuario seleccionado
           String dniUsuarioSeleccionado = dialogoBuscarUsuarios.getDNIUsuarioSeleccionado();
 
-          //Rellenar los datos del usuario en la interfaz de usuario utilizando el DNI obtenido
+          //Rellenamos los datos del usuario en la interfaz de usuario utilizando el DNI obtenido
           rellenarDatosUsuario(dniUsuarioSeleccionado);
           rellenarDatosAbono(jTextFieldDNI.getText());
     }//GEN-LAST:event_jButtonBuscarUsuarioActionPerformed
 
     private void jButtonNuevoAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNuevoAbonoActionPerformed
         AltaAbono nuevoFrame = new AltaAbono();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation());
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose();
     }//GEN-LAST:event_jButtonNuevoAbonoActionPerformed
 
     private void jButtonGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionUsuariosActionPerformed
         GestionUsuarios nuevoFrame = new GestionUsuarios();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation());
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose();
     }//GEN-LAST:event_jButtonGestionUsuariosActionPerformed
 
     private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
         GimApp nuevoFrame = new GimApp();
-        nuevoFrame.setLocation(this.getLocation()); // Establece la ubicación del nuevo JFrame igual a la del actual
+        nuevoFrame.setLocation(this.getLocation());
         nuevoFrame.setVisible(true);
-        this.dispose(); // Cierra el JFrame actual
+        this.dispose();
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
     private void jButtonEliminarAbonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarAbonoActionPerformed
@@ -1314,7 +1313,6 @@ public class GestionUsuarios extends javax.swing.JFrame implements UsuarioSelecc
            JOptionPane.showMessageDialog(this, "Selecciona un usuario primero.", "Info", JOptionPane.INFORMATION_MESSAGE);
            return;
        }
-
        int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas borrar este usuario? Si tiene abono, se borrará también", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
        if (opcion == JOptionPane.YES_OPTION) {
            String dni = jTextFieldDNI.getText();
